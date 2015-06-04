@@ -12,9 +12,12 @@
 #include <string.h>
 #include <windows.h>
 #include <conio.h>
+#include <time.h>
 using namespace std;
 
 // defines
+#define uchar unsigned char
+
 #define CTRL_UP         72
 #define CTRL_DOWN       80
 #define CTRL_RIGHT      77
@@ -23,6 +26,37 @@ using namespace std;
 #define CTRL_ESC        27
 #define CTRL_ENTER      13
 #define CTRL_F5         63
+
+#define TOP             0
+#define BOTTOM          24
+#define LEFT            0
+#define RIGHT           58
+
+// constants
+const uchar ICON_NULL[] = {"  "}; // nothing here, means clean one place
+
+/* Chinese */
+const uchar CIRC_CHA_B[] = {0xa1, 0xf1, 0}; // ●
+const uchar RECT_CHA_B[] = {0xa1, 0xf6, 0}; // ■
+const uchar RECT_CHA_W[] = {0xa1, 0xf5, 0}; // □
+const uchar STAR_CHA_B[] = {0xa1, 0xef, 0}; // ★
+const uchar STAR_CHA_W[] = {0xa3, 0xaa, 0}; // ※
+
+/* Japanese */
+const uchar CIRC_JPN_B[] = {0x81, 0x9c, 0}; // ●
+const uchar RECT_JPN_B[] = {0x81, 0xa1, 0}; // ■
+const uchar RECT_JPN_W[] = {0x81, 0xa0, 0}; // □
+const uchar STAR_JPN_B[] = {0x81, 0x9a, 0}; // ★
+const uchar STAR_JPN_W[] = {0x81, 0x96, 0}; // ※
+
+// externals
+extern char g_Local_Language[];
+
+extern const uchar *g_const_circ_b;
+extern const uchar *g_const_rect_b;
+extern const uchar *g_const_rect_w;
+extern const uchar *g_const_star_b;
+extern const uchar *g_const_star_w;
 
 // typedefs
 typedef struct Frame {
@@ -54,7 +88,10 @@ void drawFrame(Frame frame, char row[], char col[]);
 int random(int a, int b);
 COORD random(COORD leftup, COORD rightdown);
 void swap(int *a, int *b);
-char* getLocalLanguage();
+void getLocalLanguage();
+void initialize();
+void playing();
+void notSupported();
 
 #endif //_TETRIS_H_
 

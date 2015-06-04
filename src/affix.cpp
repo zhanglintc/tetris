@@ -110,10 +110,10 @@ Argument: COORD, COORD, char[]
 Return  : void
 *******************************************************/
 void drawFrame(COORD leftup, COORD  rightdown, char row[], char col[]) {
-    drawRow(   leftup.Y, leftup.X, rightdown.X, row);       //first row
-    drawRow(rightdown.Y, leftup.X, rightdown.X, row);       //last row
-    drawCol(   leftup.X, leftup.Y, rightdown.Y, col);       //first col
-    drawCol(rightdown.X, leftup.Y, rightdown.Y, col);       //last col
+    drawRow(   leftup.Y, leftup.X, rightdown.X, row);       // first row
+    drawRow(rightdown.Y, leftup.X, rightdown.X, row);       // last row
+    drawCol(   leftup.X, leftup.Y, rightdown.Y, col);       // first col
+    drawCol(rightdown.X, leftup.Y, rightdown.Y, col);       // last col
 }
 
 /*******************************************************
@@ -178,7 +178,7 @@ Function: read the registry info and get the system language info, set the info 
 Argument: none
 Return  : void
 *******************************************************/
-char *getLocalLanguage() {
+void getLocalLanguage() {
     FILE *fp;
     char language[10] = {};
     char str[] = "@echo off && for /f \"tokens=3\" %i in (\'reg query \"HKCU\\Control Panel\\International\" /v \"sLanguage\"\') do (echo %i>lan.txt)";
@@ -188,8 +188,21 @@ char *getLocalLanguage() {
     fscanf(fp,"%s", language);
     fclose(fp);
     system("del lan.txt");
-    // memcpy(g_Local_Language, language, sizeof(language));
-    return language;
+    memcpy(g_Local_Language, language, sizeof(language));
+}
+
+/*******************************************************
+Function: show system language not supported screen and exit
+Argument: none
+Return  : void
+*******************************************************/
+void notSupported() {
+    system("cls");
+    SetPos(20, 10);
+    char str[] = "The system language is not supported!";
+    cout << str << endl;
+    getchar();
+    exit(0);
 }
 
 
