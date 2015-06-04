@@ -1,6 +1,6 @@
 ﻿/*
  All the defines and declares.   http://zhanglintc.co
-(C) COPYRIGHT 2014-6-04 zhanglin. Nothing reserved.
+(C) COPYRIGHT 2015-06-04 ZhangLin. Nothing reserved.
 */
 
 #ifndef _TETRIS_H_
