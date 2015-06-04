@@ -21,7 +21,9 @@ Argument: none
 Return  : void
 *******************************************************/
 void initialize() {
+    // system("mode con cols=80 lines=22");
     system("cls");      // clean screen
+    system("title Tetris Game by Lane at ZDS");
     system("color 3e"); // set color
 
     HideCursor();       // hide cursor
