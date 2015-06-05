@@ -21,10 +21,12 @@ Argument: none
 Return  : void
 *******************************************************/
 void initialize() {
-    // system("mode con cols=80 lines=22");
-    system("cls");      // clean screen
-    system("title Tetris Game by Lane at ZDS");
-    system("color 3e"); // set color
+    char con_size[30] = {};
+    sprintf(con_size, "mode con cols=%d lines=%d", ABSOLUTE_RIGHT + 1, ABSOLUTE_BOTTOM + 1);
+    system (con_size);
+    system ("title Tetris Game by Lane at ZDS");
+    system ("color 3e"); // set color
+    system ("cls");      // clean screen
 
     HideCursor();       // hide cursor
     getLocalLanguage(); // get local language information
@@ -61,8 +63,8 @@ Return  : void
 void drawGame() {
     system("cls");
 
-    drawFrame(LEFT, TOP, RIGHT, BOTTOM, (char *)g_const_rect_w, (char *)g_const_rect_w);  // outside frame
-    drawFrame(RIGHT+2, TOP, 78, BOTTOM, (char *)g_const_star_w, (char *)g_const_star_w);  // dashboard frame
+    drawFrame(FRAME_LEFT, FRAME_TOP, FRAME_RIGHT, FRAME_BOTTOM, (char *)g_const_rect_w, (char *)g_const_rect_w);  // outside frame
+    drawFrame( DASH_LEFT,  DASH_TOP,  DASH_RIGHT,  DASH_BOTTOM, (char *)g_const_star_w, (char *)g_const_star_w);  // dashboard frame
 }
 
 /*******************************************************

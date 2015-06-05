@@ -27,10 +27,20 @@ using namespace std;
 #define CTRL_ENTER      13
 #define CTRL_F5         63
 
-#define TOP             0
-#define BOTTOM          24
-#define LEFT            0
-#define RIGHT           58
+#define ABSOLUTE_TOP    0
+#define ABSOLUTE_BOTTOM 22
+#define ABSOLUTE_LEFT   0
+#define ABSOLUTE_RIGHT  60
+
+#define FRAME_TOP       (ABSOLUTE_TOP)
+#define FRAME_BOTTOM    (ABSOLUTE_BOTTOM)
+#define FRAME_LEFT      (ABSOLUTE_LEFT)
+#define FRAME_RIGHT     22
+
+#define DASH_TOP        (ABSOLUTE_TOP)
+#define DASH_BOTTOM     (ABSOLUTE_BOTTOM)
+#define DASH_LEFT       (FRAME_RIGHT + 2)
+#define DASH_RIGHT      (ABSOLUTE_RIGHT - 2)
 
 // constants
 const uchar ICON_NULL[] = {"  "}; // nothing here, means clean one place
