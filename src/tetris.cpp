@@ -76,6 +76,53 @@ void playing() {
     ;
 }
 
+class Cube {
+public:
+    COORD base;
+    COORD shape[4];
+    int top;
+    int bottom;
+    int left;
+    int right;
+
+    Cube(COORD base, COORD shape[]) {
+        this->base = base;
+        memcpy(this->shape, shape, 4 * sizeof(COORD));
+        int minX = 0, minY = 0, maxX = 0, maxY = 0;
+        for(int i = 0; i < 4; i++) {
+            minX = this->shape[i].X < minX ? this->shape[i].X : minX;
+            minY = this->shape[i].Y < minY ? this->shape[i].Y : minY;
+            maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
+            maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
+        }
+        top    = minX;
+        bottom = maxX;
+        left   = minY;
+        right  = maxY;
+    }
+};
+
+/*
+□ □
+□ □
+*/
+COORD Shape1[] = {{0, 0}, {2, 0}, {0, 1}, {2, 1}};
+
+// Cube * block = new Cube();
+/*
+  □
+□ □ □
+*/
+COORD Shape2[] = {{0, 0}, {-2, 1}, {0, 1}, {2, 1}};
+
+/*
+□
+□ □
+  □
+*/
+COORD Shape3[] = {{0, 0}, {0, 1}, {2, 1}, {2, 2}};
+COORD base = {8, 5};
+Cube *block = new Cube(base, Shape3);
 /*******************************************************
 Function: Appearance deme of the game
 Argument: None
@@ -84,6 +131,7 @@ Return  : Void
 void display_demo() {
     initialize();
     drawGame();
+
     drawOne( 6, 15, (char *)g_const_rect_b);
     drawOne( 8, 15, (char *)g_const_rect_b);
     drawOne( 8, 16, (char *)g_const_rect_b);
@@ -100,7 +148,51 @@ void display_demo() {
 
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
-    while(true);
+
+    // for(int i = 0; i < 4; i++) {
+    //     SetPos(block->base.X + block->shape[i].X, block->base.Y + block->shape[i].Y);
+    //     cout << g_const_rect_b;
+    // }
+
+    char gotten;
+    while(true) {
+        if(_kbhit()){
+            gotten=_getch();
+
+            for(int i = 0; i < 4; i++) {
+                SetPos(block->base.X + block->shape[i].X, block->base.Y + block->shape[i].Y);
+                cout << (char *)ICON_NULL;
+            }
+
+            switch(gotten) {
+                case CTRL_UP:
+                    // node[0].y-=1;
+                    if(block->base.Y + block->top - 1 > FRAME_TOP)
+                        block->base.Y -= 1;
+                    break;
+                case CTRL_DOWN:
+                    // node[0].y+=1;
+                    if(block->base.Y + block->bottom + 1 < FRAME_BOTTOM + 1)
+                        block->base.Y += 1;
+                    break;
+                case CTRL_LEFT:
+                    // node[0].x-=2;
+                    if(block->base.X + block->left - 2 > FRAME_LEFT)
+                        block->base.X -= 2;
+                    break;
+                case CTRL_RIGHT:
+                    // node[0].x+=2;
+                    if(block->base.X + block->right + 2 < FRAME_RIGHT - 2)
+                        block->base.X += 2;
+                    break;
+            }
+
+            for(int i = 0; i < 4; i++) {
+                SetPos(block->base.X + block->shape[i].X, block->base.Y + block->shape[i].Y);
+                cout << g_const_rect_b;
+            }
+        }
+    }
 }
 
 /*******************************************************
