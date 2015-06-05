@@ -85,6 +85,7 @@ typedef struct Rank {
 }Rank;
 
 // declares
+void drawOne(int x, int y, char ch[]);
 void SetPos(COORD a);
 void SetPos(int i, int j);
 void HideCursor();

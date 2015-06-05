@@ -77,15 +77,39 @@ void playing() {
 }
 
 /*******************************************************
-Function: main entrance
-Argument: none
-Return  : int
+Function: Appearance deme of the game
+Argument: None
+Return  : Void
 *******************************************************/
-int main() {
+void display_demo() {
     initialize();
     drawGame();
-    playing();
+    drawOne( 6, 15, (char *)g_const_rect_b);
+    drawOne( 8, 15, (char *)g_const_rect_b);
+    drawOne( 8, 16, (char *)g_const_rect_b);
+    drawOne(10, 16, (char *)g_const_rect_b);
+
+    SetPos (34, 2); cout << "NEXT CUBE:";
+    drawOne(36, 4,  (char *)g_const_rect_b);
+    drawOne(38, 4,  (char *)g_const_rect_b);
+    drawOne(36, 5,  (char *)g_const_rect_b);
+    drawOne(38, 5,  (char *)g_const_rect_b);
+
+    SetPos (34,  8); cout << "HIGH SCORE:";
+    SetPos (36, 10); cout << "9999";
+
+    SetPos (34, 13); cout << "  STATUS:";
+    SetPos (34, 15); cout << " Pausing";
     while(true);
+}
+
+/*******************************************************
+Function: main entrance
+Argument: none
+Return  : Int
+*******************************************************/
+int main() {
+    display_demo();
     return 0;
 }
 
