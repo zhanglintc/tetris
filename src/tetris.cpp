@@ -95,10 +95,10 @@ public:
             maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
             maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
         }
-        top    = minX;
-        bottom = maxX;
-        left   = minY;
-        right  = maxY;
+        top    = minY;
+        bottom = maxY;
+        left   = minX;
+        right  = maxX;
     }
 };
 
@@ -172,7 +172,7 @@ void display_demo() {
                     break;
                 case CTRL_DOWN:
                     // node[0].y+=1;
-                    if(block->base.Y + block->bottom + 1 < FRAME_BOTTOM + 1)
+                    if(block->base.Y + block->bottom + 1 < FRAME_BOTTOM)
                         block->base.Y += 1;
                     break;
                 case CTRL_LEFT:
@@ -182,7 +182,7 @@ void display_demo() {
                     break;
                 case CTRL_RIGHT:
                     // node[0].x+=2;
-                    if(block->base.X + block->right + 2 < FRAME_RIGHT - 2)
+                    if(block->base.X + block->right + 2 < FRAME_RIGHT)
                         block->base.X += 2;
                     break;
             }
