@@ -77,14 +77,24 @@ void playing() {
     ;
 }
 
+void checkGrid() {
+    int score = 0;
+
+    for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
+        if(g_Grid[0][y] && g_Grid[1][y] && g_Grid[2][y] && g_Grid[3][y]) {
+            score += 1;
+        }
+    }
+}
+
 /*******************************************************
 Function: Appearance deme of the game
 Argument: None
 Return  : Void
 *******************************************************/
-void display_demo() {
+void displayDemo() {
     COORD ref_coord = {8, 5};
-    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_S);
+    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_O);
 
     initialize();
     drawGame();
@@ -106,14 +116,23 @@ void display_demo() {
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
 
+    // set g_Grid, test code
     for(int i = 0; i < 4; i++) {
         g_Grid[cube->getShape()[i].X / 2 + 4 ][cube->getShape()[i].Y + 3] = 1;
     }
-    
+
+    // set g_Grid, test code
     for(int i = 0; i < 10; i++) {
-        for(int j = 0; j < 10; j++) {
-            if(g_Grid[i][j] == 1) {
-                drawOne(i * 2 + 2, j + 1, (char *)g_const_rect_b);
+        g_Grid[i][20] = 1;
+        g_Grid[i][19] = 1;
+        g_Grid[i][18] = 1;
+    }
+    checkGrid();
+    
+    for(int x = 0; x < GRID_WIDTH; x++) {
+        for(int y = 0; y < GRID_HEIGHT; y++) {
+            if(g_Grid[x][y] == 1) {
+                drawOne(x * 2 + 2, y + 1, (char *)g_const_rect_b);
             }
         }
     }
@@ -164,7 +183,7 @@ Argument: none
 Return  : Int
 *******************************************************/
 int main() {
-    display_demo();
+    displayDemo();
     return 0;
 }
 
