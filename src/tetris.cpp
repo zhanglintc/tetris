@@ -192,10 +192,18 @@ void display_demo() {
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
 
-    // for(int i = 0; i < 4; i++) {
-    //     SetPos(block->base.X + block->shape[i].X, block->base.Y + block->shape[i].Y);
-    //     cout << g_const_rect_b;
-    // }
+    int g_invisible_grid[10][21] = {};
+    for(int i = 0; i < 4; i++) {
+        g_invisible_grid[block->getShape()[i].X / 2 + 4 ][block->getShape()[i].Y + 3] = 1;
+    }
+    
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            if(g_invisible_grid[i][j] == 1) {
+                drawOne(i * 2 + 2, j + 1, (char *)g_const_rect_b);
+            }
+        }
+    }
 
     char gotten;
     while(true) {
