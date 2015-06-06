@@ -78,15 +78,49 @@ void playing() {
 
 class Cube {
 public:
-    COORD base;
-    COORD shape[4];
-    int top;
-    int bottom;
-    int left;
-    int right;
+    void setCoord(int x, int y) {
+        this->coord.X = x;
+        this->coord.Y = y;
+    }
 
-    Cube(COORD base, COORD shape[]) {
-        this->base = base;
+    void setX(int x) {
+        this->coord.X = x;
+    }
+
+    void setY(int y) {
+        this->coord.Y = y;
+    }
+
+    int getX() {
+        return this->coord.X;
+    }
+
+    int getY() {
+        return this->coord.Y;
+    }
+
+    COORD* getShape() {
+        return this->shape;
+    }
+
+    int getTop() {
+        return this->coord.Y + top;
+    }
+
+    int getBottom() {
+        return this->coord.Y + bottom;
+    }
+
+    int getLeft() {
+        return this->coord.X + left;
+    }
+
+    int getRight() {
+        return this->coord.X + right;
+    }
+
+    Cube(COORD coord, COORD shape[]) {
+        this->coord = coord;
         memcpy(this->shape, shape, 4 * sizeof(COORD));
         int minX = 0, minY = 0, maxX = 0, maxY = 0;
         for(int i = 0; i < 4; i++) {
@@ -95,11 +129,20 @@ public:
             maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
             maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
         }
+
         top    = minY;
         bottom = maxY;
         left   = minX;
         right  = maxX;
     }
+
+private:
+    COORD coord;
+    COORD shape[4];
+    int top;
+    int bottom;
+    int left;
+    int right;
 };
 
 /*
@@ -122,7 +165,7 @@ COORD Shape2[] = {{0, 0}, {-2, 1}, {0, 1}, {2, 1}};
 */
 COORD Shape3[] = {{0, 0}, {0, 1}, {2, 1}, {2, 2}};
 COORD base = {8, 5};
-Cube *block = new Cube(base, Shape3);
+Cube *block = new Cube(base, Shape2);
 /*******************************************************
 Function: Appearance deme of the game
 Argument: None
@@ -160,35 +203,38 @@ void display_demo() {
             gotten=_getch();
 
             for(int i = 0; i < 4; i++) {
-                SetPos(block->base.X + block->shape[i].X, block->base.Y + block->shape[i].Y);
+                SetPos(block->getX() + block->getShape()[i].X, block->getY() + block->getShape()[i].Y);
                 cout << (char *)ICON_NULL;
             }
 
             switch(gotten) {
                 case CTRL_UP:
-                    // node[0].y-=1;
-                    if(block->base.Y + block->top - 1 > FRAME_TOP)
-                        block->base.Y -= 1;
+                    if(block->getTop() - 1 > FRAME_TOP)
+                        // block->coord.Y -= 1;
+                        block->setY(block->getY() - 1);
                     break;
+
                 case CTRL_DOWN:
-                    // node[0].y+=1;
-                    if(block->base.Y + block->bottom + 1 < FRAME_BOTTOM)
-                        block->base.Y += 1;
+                    if(block->getBottom() + 1 < FRAME_BOTTOM)
+                        // block->coord.Y += 1;
+                        block->setY(block->getY() + 1);
                     break;
+
                 case CTRL_LEFT:
-                    // node[0].x-=2;
-                    if(block->base.X + block->left - 2 > FRAME_LEFT)
-                        block->base.X -= 2;
+                    if(block->getLeft() - 2 > FRAME_LEFT)
+                        // block->coord.X -= 2;
+                        block->setX(block->getX() - 2);
                     break;
+
                 case CTRL_RIGHT:
-                    // node[0].x+=2;
-                    if(block->base.X + block->right + 2 < FRAME_RIGHT)
-                        block->base.X += 2;
+                    if(block->getRight() + 2 < FRAME_RIGHT)
+                        // block->coord.X += 2;
+                        block->setX(block->getX() + 2);
                     break;
             }
 
             for(int i = 0; i < 4; i++) {
-                SetPos(block->base.X + block->shape[i].X, block->base.Y + block->shape[i].Y);
+                SetPos(block->getX() + block->getShape()[i].X, block->getY() + block->getShape()[i].Y);
                 cout << g_const_rect_b;
             }
         }
