@@ -14,6 +14,7 @@ uchar const *g_const_star_w;    // global ※
 
 // global variable declares
 char g_Local_Language[10];      // global language info
+int  g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 
 /*******************************************************
 Function: initialize, set color, hide cursor, get system language, copy icon data
@@ -76,102 +77,15 @@ void playing() {
     ;
 }
 
-class Cube {
-public:
-    void setCoord(int x, int y) {
-        this->coord.X = x;
-        this->coord.Y = y;
-    }
-
-    void setX(int x) {
-        this->coord.X = x;
-    }
-
-    void setY(int y) {
-        this->coord.Y = y;
-    }
-
-    int getX() {
-        return this->coord.X;
-    }
-
-    int getY() {
-        return this->coord.Y;
-    }
-
-    COORD* getShape() {
-        return this->shape;
-    }
-
-    int getTop() {
-        return this->coord.Y + top;
-    }
-
-    int getBottom() {
-        return this->coord.Y + bottom;
-    }
-
-    int getLeft() {
-        return this->coord.X + left;
-    }
-
-    int getRight() {
-        return this->coord.X + right;
-    }
-
-    Cube(COORD coord, COORD shape[]) {
-        this->coord = coord;
-        memcpy(this->shape, shape, 4 * sizeof(COORD));
-        int minX = 0, minY = 0, maxX = 0, maxY = 0;
-        for(int i = 0; i < 4; i++) {
-            minX = this->shape[i].X < minX ? this->shape[i].X : minX;
-            minY = this->shape[i].Y < minY ? this->shape[i].Y : minY;
-            maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
-            maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
-        }
-
-        top    = minY;
-        bottom = maxY;
-        left   = minX;
-        right  = maxX;
-    }
-
-private:
-    COORD coord;
-    COORD shape[4];
-    int top;
-    int bottom;
-    int left;
-    int right;
-};
-
-/*
-□ □
-□ □
-*/
-COORD Shape1[] = {{0, 0}, {2, 0}, {0, 1}, {2, 1}};
-
-// Cube * block = new Cube();
-/*
-  □
-□ □ □
-*/
-COORD Shape2[] = {{0, 0}, {-2, 1}, {0, 1}, {2, 1}};
-
-/*
-□
-□ □
-  □
-*/
-COORD Shape3[] = {{0, 0}, {0, 1}, {2, 1}, {2, 2}};
-COORD base = {8, 5};
-Cube *block = new Cube(base, Shape2);
 /*******************************************************
 Function: Appearance deme of the game
 Argument: None
 Return  : Void
 *******************************************************/
 void display_demo() {
+    COORD ref_coord = {8, 5};
+    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_S);
+
     initialize();
     drawGame();
 
@@ -192,14 +106,13 @@ void display_demo() {
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
 
-    int g_invisible_grid[10][21] = {};
     for(int i = 0; i < 4; i++) {
-        g_invisible_grid[block->getShape()[i].X / 2 + 4 ][block->getShape()[i].Y + 3] = 1;
+        g_Grid[cube->getShape()[i].X / 2 + 4 ][cube->getShape()[i].Y + 3] = 1;
     }
     
     for(int i = 0; i < 10; i++) {
         for(int j = 0; j < 10; j++) {
-            if(g_invisible_grid[i][j] == 1) {
+            if(g_Grid[i][j] == 1) {
                 drawOne(i * 2 + 2, j + 1, (char *)g_const_rect_b);
             }
         }
@@ -211,38 +124,34 @@ void display_demo() {
             gotten=_getch();
 
             for(int i = 0; i < 4; i++) {
-                SetPos(block->getX() + block->getShape()[i].X, block->getY() + block->getShape()[i].Y);
+                SetPos(cube->getX() + cube->getShape()[i].X, cube->getY() + cube->getShape()[i].Y);
                 cout << (char *)ICON_NULL;
             }
 
             switch(gotten) {
                 case CTRL_UP:
-                    if(block->getTop() - 1 > FRAME_TOP)
-                        // block->coord.Y -= 1;
-                        block->setY(block->getY() - 1);
+                    if(cube->getTop() - 1 > FRAME_TOP)
+                        cube->setY(cube->getY() - 1);
                     break;
 
                 case CTRL_DOWN:
-                    if(block->getBottom() + 1 < FRAME_BOTTOM)
-                        // block->coord.Y += 1;
-                        block->setY(block->getY() + 1);
+                    if(cube->getBottom() + 1 < FRAME_BOTTOM)
+                        cube->setY(cube->getY() + 1);
                     break;
 
                 case CTRL_LEFT:
-                    if(block->getLeft() - 2 > FRAME_LEFT)
-                        // block->coord.X -= 2;
-                        block->setX(block->getX() - 2);
+                    if(cube->getLeft() - 2 > FRAME_LEFT)
+                        cube->setX(cube->getX() - 2);
                     break;
 
                 case CTRL_RIGHT:
-                    if(block->getRight() + 2 < FRAME_RIGHT)
-                        // block->coord.X += 2;
-                        block->setX(block->getX() + 2);
+                    if(cube->getRight() + 2 < FRAME_RIGHT)
+                        cube->setX(cube->getX() + 2);
                     break;
             }
 
             for(int i = 0; i < 4; i++) {
-                SetPos(block->getX() + block->getShape()[i].X, block->getY() + block->getShape()[i].Y);
+                SetPos(cube->getX() + cube->getShape()[i].X, cube->getY() + cube->getShape()[i].Y);
                 cout << g_const_rect_b;
             }
         }

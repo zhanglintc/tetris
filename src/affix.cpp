@@ -109,7 +109,7 @@ Function: from left-up to right-down, set row using row, set col using col
 Argument: COORD, COORD, char[]
 Return  : void
 *******************************************************/
-void drawFrame(COORD leftup, COORD  rightdown, char row[], char col[]) {
+void drawFrame(COORD leftup, COORD rightdown, char row[], char col[]) {
     drawRow(   leftup.Y, leftup.X, rightdown.X, row);       // first row
     drawRow(rightdown.Y, leftup.X, rightdown.X, row);       // last row
     drawCol(   leftup.X, leftup.Y, rightdown.Y, col);       // first col
