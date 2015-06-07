@@ -14,7 +14,8 @@ uchar const *g_const_star_w;    // global ※
 
 // global variable declares
 char g_Local_Language[10];      // global language info
-int  g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
+Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
+Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
 
 /*******************************************************
 Function: initialize, set color, hide cursor, get system language, copy icon data
@@ -77,12 +78,75 @@ void playing() {
     ;
 }
 
-void checkGrid() {
+void cleanShape(Cube *cube) {
+    for(int i = 0; i < 4; i++) {
+        g_Grid[cube->getX() + cube->getShape()[i].X][cube->getY() + cube->getShape()[i].Y].show = 0;
+    }
+}
+
+void setShape(Cube *cube) {
+    for(int i = 0; i < 4; i++) {
+        g_Grid[cube->getX() + cube->getShape()[i].X][cube->getY() + cube->getShape()[i].Y].show = 1;
+    }
+}
+
+int checkGrid() {
     int score = 0;
 
     for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
-        if(g_Grid[0][y] && g_Grid[1][y] && g_Grid[2][y] && g_Grid[3][y]) {
+        if(g_Grid[0][y].show && g_Grid[1][y].show && g_Grid[2][y].show && g_Grid[3][y].show) {
             score += 1;
+        }
+    }
+
+    return score;
+}
+
+void ctrl_up(Cube *cube) {
+    cleanShape(cube);
+    if(cube->getTop() - 1 >= 0) {
+        cube->setCoord(cube->getX(), cube->getY() - 1);
+    }
+    setShape(cube);
+}
+
+void ctrl_down(Cube *cube) {
+    cleanShape(cube);
+    if(cube->getBottom() + 1 < GRID_HEIGHT) {
+        cube->setCoord(cube->getX(), cube->getY() + 1);
+    }
+    setShape(cube);
+}
+
+void ctrl_left(Cube *cube) {
+    cleanShape(cube);
+    if(cube->getLeft() - 1 >= 0) {
+        cube->setCoord(cube->getX() - 1, cube->getY());
+    }
+    setShape(cube);
+}
+
+void ctrl_right(Cube *cube) {
+    cleanShape(cube);
+    if(cube->getRight() + 1 < GRID_WIDTH) {
+        cube->setCoord(cube->getX() + 1, cube->getY());
+    }
+    setShape(cube);
+}
+
+void backupGrid() {
+    memcpy(g_Grid_Bak, g_Grid, sizeof(g_Grid));
+}
+
+void drawGrid() {
+    for(int x = 0; x < GRID_WIDTH; x++) {
+        for(int y = 0; y < GRID_HEIGHT; y++) {
+            if(g_Grid[x][y].show == YES && g_Grid_Bak[x][y].show == NO) {
+                drawOne(x * 2 + 2, y + 1, (char *)g_const_rect_b);
+            }
+            else if(g_Grid[x][y].show == NO && g_Grid_Bak[x][y].show == YES){
+                drawOne(x * 2 + 2, y + 1, (char *)ICON_NULL);
+            }
         }
     }
 }
@@ -93,16 +157,23 @@ Argument: None
 Return  : Void
 *******************************************************/
 void displayDemo() {
-    COORD ref_coord = {8, 5};
-    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_O);
+    COORD ref_coord = {4, 5};
+    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
 
     initialize();
     drawGame();
 
-    drawOne( 6, 15, (char *)g_const_rect_b);
-    drawOne( 8, 15, (char *)g_const_rect_b);
-    drawOne( 8, 16, (char *)g_const_rect_b);
-    drawOne(10, 16, (char *)g_const_rect_b);
+    // drawOne( 6, 15, (char *)g_const_rect_b);
+    // drawOne( 8, 15, (char *)g_const_rect_b);
+    // drawOne( 8, 16, (char *)g_const_rect_b);
+    // drawOne(10, 16, (char *)g_const_rect_b);
+
+    // set g_Grid, test code
+    for(int i = 0; i < 10; i++) {
+        g_Grid[i][20].show = YES;
+        g_Grid[i][19].show = YES;
+        g_Grid[i][18].show = YES;
+    }
 
     SetPos (34, 2); cout << "NEXT CUBE:";
     drawOne(36, 4,  (char *)g_const_rect_b);
@@ -111,68 +182,55 @@ void displayDemo() {
     drawOne(38, 5,  (char *)g_const_rect_b);
 
     SetPos (34,  8); cout << "HIGH SCORE:";
-    SetPos (36, 10); cout << "9999";
+    SetPos (36, 10); cout << checkGrid();
 
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
 
-    // set g_Grid, test code
-    for(int i = 0; i < 4; i++) {
-        g_Grid[cube->getShape()[i].X / 2 + 4 ][cube->getShape()[i].Y + 3] = 1;
-    }
+    // // set g_Grid, test code
+    // for(int i = 0; i < 4; i++) {
+    //     g_Grid[cube->getShape()[i].X / 2 + 4][cube->getShape()[i].Y + 3].show = YES;
+    // }
+    setShape(cube);
 
-    // set g_Grid, test code
-    for(int i = 0; i < 10; i++) {
-        g_Grid[i][20] = 1;
-        g_Grid[i][19] = 1;
-        g_Grid[i][18] = 1;
-    }
     checkGrid();
-    
-    for(int x = 0; x < GRID_WIDTH; x++) {
-        for(int y = 0; y < GRID_HEIGHT; y++) {
-            if(g_Grid[x][y] == 1) {
-                drawOne(x * 2 + 2, y + 1, (char *)g_const_rect_b);
-            }
-        }
-    }
+    drawGrid();
 
     char gotten;
     while(true) {
         if(_kbhit()){
             gotten=_getch();
-
-            for(int i = 0; i < 4; i++) {
-                SetPos(cube->getX() + cube->getShape()[i].X, cube->getY() + cube->getShape()[i].Y);
-                cout << (char *)ICON_NULL;
-            }
-
+            backupGrid();
             switch(gotten) {
                 case CTRL_UP:
-                    if(cube->getTop() - 1 > FRAME_TOP)
-                        cube->setY(cube->getY() - 1);
+                    // if(cube->getTop() - 1 > FRAME_TOP) {
+                    //     cube->setY(cube->getY() - 1);
+                    // }
+                    ctrl_up(cube);
                     break;
 
                 case CTRL_DOWN:
-                    if(cube->getBottom() + 1 < FRAME_BOTTOM)
-                        cube->setY(cube->getY() + 1);
+                    // if(cube->getBottom() + 1 < FRAME_BOTTOM) {
+                    //     cube->setY(cube->getY() + 1);
+                    // }
+                    ctrl_down(cube);
                     break;
 
                 case CTRL_LEFT:
-                    if(cube->getLeft() - 2 > FRAME_LEFT)
-                        cube->setX(cube->getX() - 2);
+                    // if(cube->getLeft() - 2 > FRAME_LEFT) {
+                    //     cube->setX(cube->getX() - 2);
+                    // }
+                    ctrl_left(cube);
                     break;
 
                 case CTRL_RIGHT:
-                    if(cube->getRight() + 2 < FRAME_RIGHT)
-                        cube->setX(cube->getX() + 2);
+                    // if(cube->getRight() + 2 < FRAME_RIGHT) {
+                    //     cube->setX(cube->getX() + 2);
+                    // }
+                    ctrl_right(cube);
                     break;
             }
-
-            for(int i = 0; i < 4; i++) {
-                SetPos(cube->getX() + cube->getShape()[i].X, cube->getY() + cube->getShape()[i].Y);
-                cout << g_const_rect_b;
-            }
+            drawGrid();
         }
     }
 }

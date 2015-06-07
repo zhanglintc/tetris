@@ -45,6 +45,30 @@ using namespace std;
 #define GRID_WIDTH          10
 #define GRID_HEIGHT         21
 
+#define YES                 1
+#define NO                  0
+
+// typedefs
+typedef struct Frame {
+    COORD position[2];
+    int flag;
+}Frame;
+
+typedef struct Node {
+    int x;
+    int y;
+}Node;
+
+typedef struct Rank {
+    char name[20];
+    int score;
+}Rank;
+
+typedef struct Grid {
+    int show;
+    int stat;
+}Grid;
+
 // constants
 const uchar ICON_NULL[] = {"  "}; // nothing here, means clean one place
 
@@ -69,11 +93,25 @@ const COORD SHAPE_O[] = {
     {2, 1},
 };
 
+const COORD SHAPE_O_NEW[] = {
+    {0, 0},                 // ■ □
+    {1, 0},                 // □ □
+    {0, 1},
+    {1, 1},
+};
+
 const COORD SHAPE_T[] = {
     { 0, 0},                //   ■
     {-2, 1},                // □ □ □
     { 0, 1},
     { 2, 1},
+};
+
+const COORD SHAPE_T_NEW[] = {
+    { 0, 0},                //   ■
+    {-1, 1},                // □ □ □
+    { 0, 1},
+    { 1, 1},
 };
 
 const COORD SHAPE_S[] = {
@@ -83,31 +121,23 @@ const COORD SHAPE_S[] = {
     {2, 2},
 };
 
+const COORD SHAPE_S_NEW[] = {
+    {0, 0},                 // ■
+    {0, 1},                 // □ □
+    {1, 1},                 //   □
+    {1, 2},
+};
+
 // externals
 extern char g_Local_Language[];
-extern int  g_Grid[GRID_WIDTH][GRID_HEIGHT];
+extern Grid g_Grid[GRID_WIDTH][GRID_HEIGHT];
+extern Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT];
 
 extern const uchar *g_const_circ_b;
 extern const uchar *g_const_rect_b;
 extern const uchar *g_const_rect_w;
 extern const uchar *g_const_star_b;
 extern const uchar *g_const_star_w;
-
-// typedefs
-typedef struct Frame {
-    COORD position[2];
-    int flag;
-}Frame;
-
-typedef struct Node {
-    int x;
-    int y;
-}Node;
-
-typedef struct Rank {
-    char name[20];
-    int score;
-}Rank;
 
 // classes
 class Cube {
@@ -198,6 +228,8 @@ void getLocalLanguage();
 void initialize();
 void playing();
 void notSupported();
+int checkGrid();
+void displayDemo();
 
 #endif //_TETRIS_H_
 
