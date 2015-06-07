@@ -110,12 +110,22 @@ void ctrl_up(Cube *cube) {
     setShape(cube);
 }
 
-void ctrl_down(Cube *cube) {
+Cube *ctrl_down(Cube *cube) {
     cleanShape(cube);
     if(cube->getBottom() + 1 < GRID_HEIGHT) {
-        cube->setCoord(cube->getX(), cube->getY() + 1);
+        if(g_Grid[cube->getX()][cube->getBottom() + 1].show == YES) {
+            COORD ref_coord = {4, 5};
+            setShape(cube);
+            free(cube);
+            cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
+            return cube;
+        }
+        else {
+            cube->setCoord(cube->getX(), cube->getY() + 1);
+        }
     }
     setShape(cube);
+    return cube;
 }
 
 void ctrl_left(Cube *cube) {
@@ -213,7 +223,7 @@ void displayDemo() {
                     // if(cube->getBottom() + 1 < FRAME_BOTTOM) {
                     //     cube->setY(cube->getY() + 1);
                     // }
-                    ctrl_down(cube);
+                    cube = ctrl_down(cube);
                     break;
 
                 case CTRL_LEFT:
