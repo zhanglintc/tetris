@@ -82,7 +82,7 @@ void playing() {
 
 bool isInCube(COORD pos, Cube *cube) {
     for(int i = 0; i < 4; i++) {
-        if(pos.X == cube->getX() + cube->getShape()[i].X && pos.Y == cube->getY() + cube->getShape()[i].Y) {
+        if(pos.X == cube->getX() + cube->getShapes()[cube->cur_type][i].X && pos.Y == cube->getY() + cube->getShapes()[cube->cur_type][i].Y) {
             return true;
         }
     }
@@ -92,13 +92,13 @@ bool isInCube(COORD pos, Cube *cube) {
 
 void cleanShape(Cube *cube) {
     for(int i = 0; i < 4; i++) {
-        g_Grid[cube->getX() + cube->getShape()[i].X][cube->getY() + cube->getShape()[i].Y].show = 0;
+        g_Grid[cube->getX() + cube->getShapes()[cube->cur_type][i].X][cube->getY() + cube->getShapes()[cube->cur_type][i].Y].show = 0;
     }
 }
 
 void setShape(Cube *cube) {
     for(int i = 0; i < 4; i++) {
-        g_Grid[cube->getX() + cube->getShape()[i].X][cube->getY() + cube->getShape()[i].Y].show = 1;
+        g_Grid[cube->getX() + cube->getShapes()[cube->cur_type][i].X][cube->getY() + cube->getShapes()[cube->cur_type][i].Y].show = 1;
     }
 }
 
@@ -140,8 +140,12 @@ int checkGrid() {
 
 void ctrl_up(Cube *cube) {
     cleanShape(cube);
-    if(cube->getTop() - 1 >= 0) {
-        cube->setCoord(cube->getX(), cube->getY() - 1);
+    // if(cube->getTop() - 1 >= 0) {
+    //     cube->setCoord(cube->getX(), cube->getY() - 1);
+    // }
+    cube->cur_type += 1;
+    if(cube->cur_type >= cube->type_len) {
+        cube->cur_type = 0;
     }
     setShape(cube);
 }
@@ -165,17 +169,17 @@ Cube *ctrl_down(Cube *cube) {
     cleanShape(cube);
     COORD c;
     for(int i = 0; i < 4; i++) {
-        c.X = cube->getCoord().X + cube->getShape()[i].X;
-        c.Y = cube->getCoord().Y + cube->getShape()[i].Y + 1;
+        c.X = cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X;
+        c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y + 1;
         if(
             // if reach blocks
-            isInCube(c, cube) == false && g_Grid[cube->getCoord().X + cube->getShape()[i].X][cube->getCoord().Y + 1 + cube->getShape()[i].Y].show == 1
+            isInCube(c, cube) == false && g_Grid[cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y].show == 1
             // if reach bottom
-            || cube->getCoord().Y + 1 + cube->getShape()[i].Y >= GRID_HEIGHT) {
+            || cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y >= GRID_HEIGHT) {
             setShape(cube);
             free(cube);
             COORD ref_coord = {4, 0};
-            cube = new Cube(ref_coord, (COORD *)SHAPE_I_2, SHAPE_I_SERIES);
+            cube = new Cube(ref_coord, SHAPE_I_SERIES, 2);
             checkGrid();
             setShape(cube);
             return cube;
@@ -191,14 +195,23 @@ Cube *ctrl_down(Cube *cube) {
 void ctrl_left(Cube *cube) {
     COORD c;
     for(int i = 0; i < 4; i++) {
-        c.X = cube->getCoord().X + cube->getShape()[i].X - 1;
-        c.Y = cube->getCoord().Y + cube->getShape()[i].Y;
-        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X - 1 + cube->getShape()[i].X][cube->getCoord().Y + cube->getShape()[i].Y].show == 1) {
+        c.X = cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X - 1;
+        c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y;
+        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X - 1 + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y].show == 1) {
             return;
         }
     }
     cleanShape(cube);
-    if(cube->getLeft() - 1 >= 0) {
+    // if(cube->getLeft() - 1 >= 0) {
+    //     cube->setCoord(cube->getX() - 1, cube->getY());
+    // }
+    bool move = true;
+    for(int i = 0; i < 4; i++) {
+        if(cube->getCoord().X - 1 + cube->getShapes()[cube->cur_type][i].X < 0) {
+            move = false;
+        }
+    }
+    if(move == true) {
         cube->setCoord(cube->getX() - 1, cube->getY());
     }
     setShape(cube);
@@ -206,15 +219,25 @@ void ctrl_left(Cube *cube) {
 
 void ctrl_right(Cube *cube) {
     COORD c;
+
     for(int i = 0; i < 4; i++) {
-        c.X = cube->getCoord().X + cube->getShape()[i].X + 1;
-        c.Y = cube->getCoord().Y + cube->getShape()[i].Y;
-        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X + 1 + cube->getShape()[i].X][cube->getCoord().Y + cube->getShape()[i].Y].show == 1) {
+        c.X = cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X + 1;
+        c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y;
+        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X + 1 + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y].show == 1) {
             return;
         }
     }
     cleanShape(cube);
-    if(cube->getRight() + 1 < GRID_WIDTH) {
+    // if(cube->getRight() + 1 < GRID_WIDTH) {
+        // cube->setCoord(cube->getX() + 1, cube->getY());
+    // }
+    bool move = true;
+    for(int i = 0; i < 4; i++) {
+        if(cube->getCoord().X + 1 + cube->getShapes()[cube->cur_type][i].X >= GRID_WIDTH) {
+            move = false;
+        }
+    }
+    if(move == true) {
         cube->setCoord(cube->getX() + 1, cube->getY());
     }
     setShape(cube);
@@ -244,7 +267,7 @@ Return  : Void
 *******************************************************/
 void displayDemo() {
     COORD ref_coord = {4, 0};
-    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_I_2, SHAPE_I_SERIES);
+    Cube *cube = new Cube(ref_coord, SHAPE_I_SERIES, 2);
 
     initialize();
     drawGame();
@@ -273,10 +296,10 @@ void displayDemo() {
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
 
-    // set g_Grid, test code
-    for(int i = 0; i < 4; i++) {
-        g_Grid[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
-    }
+    // // set g_Grid, test code
+    // for(int i = 0; i < 4; i++) {
+    //     g_Grid[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
+    // }
 
     setShape(cube);
 

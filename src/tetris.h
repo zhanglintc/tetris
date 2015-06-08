@@ -156,6 +156,9 @@ extern const uchar *g_const_star_w;
 // classes
 class Cube {
 public:
+    int cur_type;
+    int type_len;
+
     void setCoord(int x, int y) {
         this->coord.X = x;
         this->coord.Y = y;
@@ -181,9 +184,9 @@ public:
         return this->coord.Y;
     }
 
-    COORD* getShape() {
-        return this->shape;
-    }
+    // COORD* getShape() {
+    //     return this->shape;
+    // }
 
     COORD** getShapes() {
         return this->shapes;
@@ -205,29 +208,31 @@ public:
         return this->coord.X + right;
     }
 
-    Cube(COORD coord, COORD shape[], COORD **shapes) {
+    Cube(COORD coord, /*COORD shape[],*/ COORD **shapes, int type_len) {
         this->coord = coord;
+        // memcpy(this->shape, shape, 4 * sizeof(COORD));
         this->shapes = shapes;
-        memcpy(this->shape, shape, 4 * sizeof(COORD));
-        int minX = 0, minY = 0, maxX = 0, maxY = 0;
-        for(int i = 0; i < 4; i++) {
-            minX = this->shape[i].X < minX ? this->shape[i].X : minX;
-            minY = this->shape[i].Y < minY ? this->shape[i].Y : minY;
-            maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
-            maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
-        }
+        this->type_len = type_len;
+        this->cur_type = 0;
 
-        top    = minY;
-        bottom = maxY;
-        left   = minX;
-        right  = maxX;
+    //     int minX = 0, minY = 0, maxX = 0, maxY = 0;
+    //     for(int i = 0; i < 4; i++) {
+    //         minX = this->shape[i].X < minX ? this->shape[i].X : minX;
+    //         minY = this->shape[i].Y < minY ? this->shape[i].Y : minY;
+    //         maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
+    //         maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
+    //     }
+
+    //     top    = minY;
+    //     bottom = maxY;
+    //     left   = minX;
+    //     right  = maxX;
     }
 
 private:
     COORD coord;
-    COORD shape[4];
+    // COORD shape[4];
     COORD **shapes;
-    int types;
     int top;
     int bottom;
     int left;
