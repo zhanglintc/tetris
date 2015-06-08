@@ -128,6 +128,20 @@ const COORD SHAPE_S_NEW[] = {
     {1, 2},
 };
 
+const COORD SHAPE_I_1[] = {
+    {0, 0},                 // ■
+    {0, 1},                 // □
+    {0, 2},                 // □
+    {0, 3},                 // □
+};
+
+const COORD SHAPE_I_2[] = {
+    {0, 0},                 // ■ □ □ □
+    {1, 0},
+    {2, 0},
+    {3, 0},
+};
+
 // externals
 extern char g_Local_Language[];
 extern Grid g_Grid[GRID_WIDTH][GRID_HEIGHT];
@@ -171,6 +185,10 @@ public:
         return this->shape;
     }
 
+    COORD** getShapes() {
+        return this->shapes;
+    }
+
     int getTop() {
         return this->coord.Y + top;
     }
@@ -187,8 +205,9 @@ public:
         return this->coord.X + right;
     }
 
-    Cube(COORD coord, COORD shape[]) {
+    Cube(COORD coord, COORD shape[], COORD **shapes) {
         this->coord = coord;
+        this->shapes = shapes;
         memcpy(this->shape, shape, 4 * sizeof(COORD));
         int minX = 0, minY = 0, maxX = 0, maxY = 0;
         for(int i = 0; i < 4; i++) {
@@ -207,6 +226,8 @@ public:
 private:
     COORD coord;
     COORD shape[4];
+    COORD **shapes;
+    int types;
     int top;
     int bottom;
     int left;

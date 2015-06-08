@@ -17,6 +17,7 @@ char g_Local_Language[10];      // global language info
 int  g_Score = 0;
 Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
+COORD *SHAPE_I_SERIES[] = {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2};
 
 /*******************************************************
 Function: initialize, set color, hide cursor, get system language, copy icon data
@@ -152,7 +153,7 @@ Cube *ctrl_down(Cube *cube) {
     //         setShape(cube);
     //         free(cube);
     //         COORD ref_coord = {4, 0};
-    //         cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
+    //         cube = new Cube(ref_coord, (COORD *)SHAPE_I_2);
     //         setShape(cube);
     //         return cube;
     //     }
@@ -174,7 +175,7 @@ Cube *ctrl_down(Cube *cube) {
             setShape(cube);
             free(cube);
             COORD ref_coord = {4, 0};
-            cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
+            cube = new Cube(ref_coord, (COORD *)SHAPE_I_2, SHAPE_I_SERIES);
             checkGrid();
             setShape(cube);
             return cube;
@@ -243,7 +244,7 @@ Return  : Void
 *******************************************************/
 void displayDemo() {
     COORD ref_coord = {4, 0};
-    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
+    Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_I_2, SHAPE_I_SERIES);
 
     initialize();
     drawGame();
@@ -272,10 +273,10 @@ void displayDemo() {
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
 
-    // // set g_Grid, test code
-    // for(int i = 0; i < 4; i++) {
-    //     g_Grid[cube->getShape()[i].X / 2 + 4][cube->getShape()[i].Y + 3].show = YES;
-    // }
+    // set g_Grid, test code
+    for(int i = 0; i < 4; i++) {
+        g_Grid[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
+    }
 
     setShape(cube);
 
