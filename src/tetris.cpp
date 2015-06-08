@@ -14,6 +14,7 @@ uchar const *g_const_star_w;    // global ※
 
 // global variable declares
 char g_Local_Language[10];      // global language info
+int  g_Score = 0;
 Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
 
@@ -78,6 +79,16 @@ void playing() {
     ;
 }
 
+bool isInCube(COORD pos, Cube *cube) {
+    for(int i = 0; i < 4; i++) {
+        if(pos.X == cube->getX() + cube->getShape()[i].X && pos.Y == cube->getY() + cube->getShape()[i].Y) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void cleanShape(Cube *cube) {
     for(int i = 0; i < 4; i++) {
         g_Grid[cube->getX() + cube->getShape()[i].X][cube->getY() + cube->getShape()[i].Y].show = 0;
@@ -90,16 +101,40 @@ void setShape(Cube *cube) {
     }
 }
 
-int checkGrid() {
-    int score = 0;
-
+void moveGridDown() {
     for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
-        if(g_Grid[0][y].show && g_Grid[1][y].show && g_Grid[2][y].show && g_Grid[3][y].show) {
-            score += 1;
+        for(int x = 0; x < GRID_WIDTH; x++) {
+            if(y == 0) {
+                g_Grid[x][y].show = 0;
+            }
+            else {
+                g_Grid[x][y] = g_Grid[x][y - 1];
+            }
+        }
+    }
+}
+
+int checkGrid() {
+    for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
+        if( g_Grid[0][y].show &&
+            g_Grid[1][y].show &&
+            g_Grid[2][y].show &&
+            g_Grid[3][y].show &&
+            g_Grid[4][y].show &&
+            g_Grid[5][y].show &&
+            g_Grid[6][y].show &&
+            g_Grid[7][y].show &&
+            g_Grid[8][y].show &&
+            g_Grid[9][y].show
+            ) {
+            g_Score += 1;
+            SetPos (34,  8); cout << "HIGH SCORE:";
+            SetPos (36, 10); cout << g_Score;
+            moveGridDown();
         }
     }
 
-    return score;
+    return g_Score;
 }
 
 void ctrl_up(Cube *cube) {
@@ -111,24 +146,55 @@ void ctrl_up(Cube *cube) {
 }
 
 Cube *ctrl_down(Cube *cube) {
+    // cleanShape(cube);
+    // if(cube->getBottom() + 1 < GRID_HEIGHT) {
+    //     if(g_Grid[cube->getX()][cube->getBottom() + 1].show == YES) {
+    //         setShape(cube);
+    //         free(cube);
+    //         COORD ref_coord = {4, 0};
+    //         cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
+    //         setShape(cube);
+    //         return cube;
+    //     }
+    //     else {
+    //         cube->setCoord(cube->getX(), cube->getY() + 1);
+    //     }
+    // }
+    // setShape(cube);
     cleanShape(cube);
-    if(cube->getBottom() + 1 < GRID_HEIGHT) {
-        if(g_Grid[cube->getX()][cube->getBottom() + 1].show == YES) {
-            COORD ref_coord = {4, 5};
+    COORD c;
+    for(int i = 0; i < 4; i++) {
+        c.X = cube->getCoord().X + cube->getShape()[i].X;
+        c.Y = cube->getCoord().Y + cube->getShape()[i].Y + 1;
+        if(
+            // if reach blocks
+            isInCube(c, cube) == false && g_Grid[cube->getCoord().X + cube->getShape()[i].X][cube->getCoord().Y + 1 + cube->getShape()[i].Y].show == 1
+            // if reach bottom
+            || cube->getCoord().Y + 1 + cube->getShape()[i].Y >= GRID_HEIGHT) {
             setShape(cube);
             free(cube);
+            COORD ref_coord = {4, 0};
             cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
+            checkGrid();
+            setShape(cube);
             return cube;
-        }
-        else {
-            cube->setCoord(cube->getX(), cube->getY() + 1);
-        }
+        }        
     }
+    cube->setCoord(cube->getX(), cube->getY() + 1);
+    checkGrid();
     setShape(cube);
     return cube;
 }
 
 void ctrl_left(Cube *cube) {
+    COORD c;
+    for(int i = 0; i < 4; i++) {
+        c.X = cube->getCoord().X + cube->getShape()[i].X - 1;
+        c.Y = cube->getCoord().Y + cube->getShape()[i].Y;
+        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X - 1 + cube->getShape()[i].X][cube->getCoord().Y + cube->getShape()[i].Y].show == 1) {
+            return;
+        }
+    }
     cleanShape(cube);
     if(cube->getLeft() - 1 >= 0) {
         cube->setCoord(cube->getX() - 1, cube->getY());
@@ -137,6 +203,14 @@ void ctrl_left(Cube *cube) {
 }
 
 void ctrl_right(Cube *cube) {
+    COORD c;
+    for(int i = 0; i < 4; i++) {
+        c.X = cube->getCoord().X + cube->getShape()[i].X + 1;
+        c.Y = cube->getCoord().Y + cube->getShape()[i].Y;
+        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X + 1 + cube->getShape()[i].X][cube->getCoord().Y + cube->getShape()[i].Y].show == 1) {
+            return;
+        }
+    }
     cleanShape(cube);
     if(cube->getRight() + 1 < GRID_WIDTH) {
         cube->setCoord(cube->getX() + 1, cube->getY());
@@ -167,7 +241,7 @@ Argument: None
 Return  : Void
 *******************************************************/
 void displayDemo() {
-    COORD ref_coord = {4, 5};
+    COORD ref_coord = {4, 0};
     Cube *cube = new Cube(ref_coord, (COORD *)SHAPE_O_NEW);
 
     initialize();
@@ -179,11 +253,11 @@ void displayDemo() {
     // drawOne(10, 16, (char *)g_const_rect_b);
 
     // set g_Grid, test code
-    for(int i = 0; i < 10; i++) {
-        g_Grid[i][20].show = YES;
-        g_Grid[i][19].show = YES;
-        g_Grid[i][18].show = YES;
-    }
+    // for(int i = 0; i < 10; i++) {
+    //     g_Grid[i][20].show = YES;
+    //     g_Grid[i][19].show = YES;
+    //     g_Grid[i][18].show = YES;
+    // }
 
     SetPos (34, 2); cout << "NEXT CUBE:";
     drawOne(36, 4,  (char *)g_const_rect_b);
@@ -192,7 +266,7 @@ void displayDemo() {
     drawOne(38, 5,  (char *)g_const_rect_b);
 
     SetPos (34,  8); cout << "HIGH SCORE:";
-    SetPos (36, 10); cout << checkGrid();
+    SetPos (36, 10); cout << g_Score;
 
     SetPos (34, 13); cout << "  STATUS:";
     SetPos (34, 15); cout << " Pausing";
@@ -201,6 +275,7 @@ void displayDemo() {
     // for(int i = 0; i < 4; i++) {
     //     g_Grid[cube->getShape()[i].X / 2 + 4][cube->getShape()[i].Y + 3].show = YES;
     // }
+
     setShape(cube);
 
     checkGrid();

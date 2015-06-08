@@ -147,6 +147,10 @@ public:
         this->coord.Y = y;
     }
 
+    COORD getCoord() {
+        return this->coord;
+    }
+
     void setX(int x) {
         this->coord.X = x;
     }
