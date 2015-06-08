@@ -107,8 +107,8 @@ void setShape(Cube *cube) {
     }
 }
 
-void moveGridDown() {
-    for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
+void moveGridDown(int tergetY) {
+    for(int y = tergetY; y >= 0; y--) {
         for(int x = 0; x < GRID_WIDTH; x++) {
             if(y == 0) {
                 g_Grid[x][y].show = 0;
@@ -121,7 +121,7 @@ void moveGridDown() {
 }
 
 int checkGrid() {
-    for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
+    for(int y = 0; y < GRID_HEIGHT; y++) {
         while( g_Grid[0][y].show &&
             g_Grid[1][y].show &&
             g_Grid[2][y].show &&
@@ -136,7 +136,7 @@ int checkGrid() {
             g_Score += 1;
             SetPos (34,  8); cout << "HIGH SCORE:";
             SetPos (36, 10); cout << g_Score;
-            moveGridDown();
+            moveGridDown(y);
         }
     }
 
