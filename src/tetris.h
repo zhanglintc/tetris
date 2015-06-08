@@ -71,7 +71,7 @@ typedef struct Grid {
 
 typedef struct Shape {
     int   types;
-    COORD *shape[];
+    COORD *shape[4];
 }Shape;
 
 // constants
