@@ -17,13 +17,12 @@ char g_Local_Language[10];      // global language info
 int  g_Score = 0;
 Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
-COORD *SHAPE_I[] = {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2};
-COORD *SHAPE_T[] = {(COORD *)SHAPE_T_1, (COORD *)SHAPE_T_2, (COORD *)SHAPE_T_3, (COORD *)SHAPE_T_4};
-COORD *SHAPE_S[] = {(COORD *)SHAPE_S_1, (COORD *)SHAPE_S_2};
-COORD *SHAPE_2[] = {(COORD *)SHAPE_2_1, (COORD *)SHAPE_2_2};
-COORD *SHAPE_L[] = {(COORD *)SHAPE_L_1, (COORD *)SHAPE_L_2, (COORD *)SHAPE_L_3, (COORD *)SHAPE_L_4};
-COORD *SHAPE_J[] = {(COORD *)SHAPE_J_1, (COORD *)SHAPE_J_2, (COORD *)SHAPE_J_3, (COORD *)SHAPE_J_4};
-
+Shape SHAPE_I = {2, {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2}};
+Shape SHAPE_T = {4, {(COORD *)SHAPE_T_1, (COORD *)SHAPE_T_2, (COORD *)SHAPE_T_3, (COORD *)SHAPE_T_4}};
+Shape SHAPE_S = {2, {(COORD *)SHAPE_S_1, (COORD *)SHAPE_S_2}};
+Shape SHAPE_2 = {2, {(COORD *)SHAPE_2_1, (COORD *)SHAPE_2_2}};
+Shape SHAPE_L = {4, {(COORD *)SHAPE_L_1, (COORD *)SHAPE_L_2, (COORD *)SHAPE_L_3, (COORD *)SHAPE_L_4}};
+Shape SHAPE_J = {4, {(COORD *)SHAPE_J_1, (COORD *)SHAPE_J_2, (COORD *)SHAPE_J_3, (COORD *)SHAPE_J_4}};
 
 /*******************************************************
 Function: initialize, set color, hide cursor, get system language, copy icon data
@@ -185,7 +184,7 @@ Cube *ctrl_down(Cube *cube) {
             setShape(cube);
             free(cube);
             COORD ref_coord = {4, 5};
-            cube = new Cube(ref_coord, SHAPE_J, 4);
+            cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
             checkGrid();
             setShape(cube);
             return cube;
@@ -273,7 +272,7 @@ Return  : Void
 *******************************************************/
 void displayDemo() {
     COORD ref_coord = {4, 3};
-    Cube *cube = new Cube(ref_coord, SHAPE_J, 4);
+    Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
 
     initialize();
     drawGame();

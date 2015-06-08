@@ -69,6 +69,11 @@ typedef struct Grid {
     int stat;
 }Grid;
 
+typedef struct Shape {
+    int   types;
+    COORD *shape[];
+}Shape;
+
 // constants
 const uchar ICON_NULL[] = {"  "}; // nothing here, means clean one place
 
