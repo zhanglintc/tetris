@@ -116,7 +116,7 @@ void moveGridDown() {
 
 int checkGrid() {
     for(int y = GRID_HEIGHT - 1; y >= 0; y--) {
-        if( g_Grid[0][y].show &&
+        while( g_Grid[0][y].show &&
             g_Grid[1][y].show &&
             g_Grid[2][y].show &&
             g_Grid[3][y].show &&
@@ -182,6 +182,7 @@ Cube *ctrl_down(Cube *cube) {
     }
     cube->setCoord(cube->getX(), cube->getY() + 1);
     checkGrid();
+    cube = ctrl_down(cube);
     setShape(cube);
     return cube;
 }
