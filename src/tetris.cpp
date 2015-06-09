@@ -15,6 +15,7 @@ uchar const *g_const_star_w;    // global ※
 // global variable declares
 char g_Local_Language[10];      // global language info
 int  g_Score = 0;
+CubeGenerator *g_CubeGenerator;
 Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
 Shape SHAPE_I = {2, {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2}};
@@ -60,6 +61,14 @@ void initialize() {
         g_const_star_b = STAR_JPN_B;
         g_const_star_w = STAR_JPN_W;
     }
+
+    g_CubeGenerator = new CubeGenerator();
+    g_CubeGenerator->loadShape(SHAPE_I);
+    g_CubeGenerator->loadShape(SHAPE_T);
+    g_CubeGenerator->loadShape(SHAPE_S);
+    g_CubeGenerator->loadShape(SHAPE_2);
+    g_CubeGenerator->loadShape(SHAPE_L);
+    g_CubeGenerator->loadShape(SHAPE_J);
 
     srand((unsigned)time(NULL));        // Random number seed initial
 }
@@ -184,7 +193,9 @@ Cube *ctrl_down(Cube *cube) {
             setShape(cube);
             free(cube);
             COORD ref_coord = {4, 5};
-            cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
+            // cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
+            int index = random(0, g_CubeGenerator->getLength());
+            cube = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
             checkGrid();
             setShape(cube);
             return cube;

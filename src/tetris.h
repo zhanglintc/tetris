@@ -322,6 +322,29 @@ private:
     int right;
 };
 
+class CubeGenerator {
+public:
+    int getLength() {
+        return this->length;
+    }
+
+    void loadShape(Shape shape) {
+        shapeList[this->length] = shape;
+        length += 1;
+    }
+
+    Shape* getShapeList() {
+        return this->shapeList;
+    }
+
+    CubeGenerator() {
+        this->length = 0;
+    }
+private:
+    Shape shapeList[20];
+    int   length;
+};
+
 // declares
 void drawOne(int x, int y, char ch[]);
 void SetPos(COORD a);
