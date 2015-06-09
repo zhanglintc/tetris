@@ -267,6 +267,22 @@ public:
         return this->coord.Y;
     }
 
+    void moveUp() {
+        this->coord.Y -= 1;
+    }
+
+    void moveDown() {
+        this->coord.Y += 1;
+    }
+
+    void moveLeft() {
+        this->coord.X -= 1;
+    }
+
+    void moveRight() {
+        this->coord.X += 1;
+    }
+
     // COORD* getShape() {
     //     return this->shape;
     // }

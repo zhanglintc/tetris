@@ -156,14 +156,41 @@ int checkGrid() {
     return g_Score;
 }
 
+bool isValidShapePos(Cube *cube) {
+    COORD c;
+
+    for(int i = 0; i < 4; i++) {
+        c.X = cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X;
+        c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y;
+
+        // hit dormant cubes?
+        if(g_Grid[c.X][c.Y].show == 1) {
+            return false;
+        }
+
+        // out of bound?
+        if(c.X < 0 || c.X >= GRID_WIDTH || c.Y < 0 || c.Y >= GRID_HEIGHT) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void ctrl_up(Cube *cube) {
+    int tmp = cube->cur_type;
+
     cleanShape(cube);
-    // if(cube->getTop() - 1 >= 0) {
-    //     cube->setCoord(cube->getX(), cube->getY() - 1);
-    // }
     cube->cur_type += 1;
     if(cube->cur_type >= cube->type_len) {
         cube->cur_type = 0;
+    }
+
+    if(isValidShapePos(cube) == false) {
+        cube->cur_type = tmp; // restore it
+    }
+    else {
+        ; // do nothing
     }
     setShape(cube);
 }
@@ -218,53 +245,30 @@ Cube *ctrl_down(Cube *cube) {
 }
 
 void ctrl_left(Cube *cube) {
-    COORD c;
-    for(int i = 0; i < 4; i++) {
-        c.X = cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X - 1;
-        c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y;
-        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X - 1 + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y].show == 1) {
-            return;
-        }
-    }
     cleanShape(cube);
-    // if(cube->getLeft() - 1 >= 0) {
-    //     cube->setCoord(cube->getX() - 1, cube->getY());
-    // }
-    bool move = true;
-    for(int i = 0; i < 4; i++) {
-        if(cube->getCoord().X - 1 + cube->getShapes()[cube->cur_type][i].X < 0) {
-            move = false;
-        }
+
+    cube->moveLeft();
+    if(isValidShapePos(cube) == false) {
+        cube->moveRight(); // move back
     }
-    if(move == true) {
-        cube->setCoord(cube->getX() - 1, cube->getY());
+    else {
+        ; // do nothing
     }
+
     setShape(cube);
 }
 
 void ctrl_right(Cube *cube) {
-    COORD c;
-
-    for(int i = 0; i < 4; i++) {
-        c.X = cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X + 1;
-        c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y;
-        if(isInCube(c, cube) == false && g_Grid[cube->getCoord().X + 1 + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y].show == 1) {
-            return;
-        }
-    }
     cleanShape(cube);
-    // if(cube->getRight() + 1 < GRID_WIDTH) {
-        // cube->setCoord(cube->getX() + 1, cube->getY());
-    // }
-    bool move = true;
-    for(int i = 0; i < 4; i++) {
-        if(cube->getCoord().X + 1 + cube->getShapes()[cube->cur_type][i].X >= GRID_WIDTH) {
-            move = false;
-        }
+
+    cube->moveRight();
+    if(isValidShapePos(cube) == false) {
+        cube->moveLeft(); // move back
     }
-    if(move == true) {
-        cube->setCoord(cube->getX() + 1, cube->getY());
+    else {
+        ; // do nothing
     }
+
     setShape(cube);
 }
 
@@ -354,10 +358,25 @@ void displayDemo() {
     while(true) {
 
         counter++;
-        if(counter >= 50000) {
+        if(counter >= 30000) {
             backupGrid();
             cleanShape(g_cur_cube);
-            g_cur_cube->setCoord(g_cur_cube->getX(), g_cur_cube->getY() + 1);
+            g_cur_cube->moveDown();
+            if(isValidShapePos(g_cur_cube) == false) {
+                // move back && setShape
+                g_cur_cube->moveUp();
+                setShape(g_cur_cube);
+
+                // get next cube && draw it
+                g_cur_cube = g_next_cube;
+                Shape *s = createShape();
+                g_next_cube = new Cube(ref_coord, s->shape, s->types);
+                cleanNEXT(g_cur_cube);
+                drawNEXT(g_next_cube);
+            }
+            else {
+                ; // do nothing
+            }
             setShape(g_cur_cube);
             drawGrid();
             counter = 0;
