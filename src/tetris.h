@@ -360,7 +360,7 @@ void drawFrame(Frame frame, char row[], char col[]);
 int random(int min, int max);
 int random(int max);
 COORD random(COORD leftup, COORD rightdown);
-Shape createShape();
+Shape *createShape();
 void swap(int *a, int *b);
 void getLocalLanguage();
 void initialize();

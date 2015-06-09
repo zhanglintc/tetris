@@ -194,22 +194,15 @@ Cube *ctrl_down(Cube *cube) {
             || cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y >= GRID_HEIGHT) {
             setShape(cube);
             // free(cube);
-             COORD ref_coord = {4, 5};
+            COORD ref_coord = {4, 5};
             // cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
         
             cube = g_next_cube;
-            /*****************************************************
-            There is bug in below code,
-            if I usd s = createShape() then new a Cube with s,
-            the new cube will be null members in it.
-            need investigation.
-
-            // Shape s = createShape();
-            // g_next_cube = new Cube(ref_coord, s.shape, s.types);
+            Shape *s = createShape();
+            g_next_cube = new Cube(ref_coord, s->shape, s->types);
             // g_next_cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
-            *****************************************************/
-            int index = random(0, g_CubeGenerator->getLength());
-            g_next_cube = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
+            // int index = random(0, g_CubeGenerator->getLength());
+            // g_next_cube = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
             checkGrid();
             setShape(cube);
             return cube;
@@ -306,9 +299,9 @@ void cleanNEXT(Cube *cube) {
     }
 }
 
-Shape createShape() {
+Shape *createShape() {
     int r = random(g_CubeGenerator->getLength());
-    return g_CubeGenerator->getShapeList()[r];
+    return &g_CubeGenerator->getShapeList()[r];
 }
 
 /*******************************************************
@@ -321,10 +314,10 @@ void displayDemo() {
 
     COORD ref_coord = {4, 3};
     // Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
-    Shape next = createShape();
-    Shape curr = createShape();
-    g_next_cube = new Cube(ref_coord, next.shape, next.types);
-    g_cur_cube =  new Cube(ref_coord, curr.shape, curr.types);
+    Shape *next = createShape();
+    Shape *curr = createShape();
+    g_next_cube = new Cube(ref_coord, next->shape, next->types);
+    g_cur_cube =  new Cube(ref_coord, curr->shape, curr->types);
 
     drawGame();
 
