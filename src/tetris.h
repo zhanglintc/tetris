@@ -275,51 +275,18 @@ public:
         return this->shapes;
     }
 
-    int getTop() {
-        return this->coord.Y + top;
-    }
-
-    int getBottom() {
-        return this->coord.Y + bottom;
-    }
-
-    int getLeft() {
-        return this->coord.X + left;
-    }
-
-    int getRight() {
-        return this->coord.X + right;
-    }
-
     Cube(COORD coord, /*COORD shape[],*/ COORD **shapes, int type_len) {
         this->coord = coord;
         // memcpy(this->shape, shape, 4 * sizeof(COORD));
         this->shapes = shapes;
         this->type_len = type_len;
         this->cur_type = 0;
-
-    //     int minX = 0, minY = 0, maxX = 0, maxY = 0;
-    //     for(int i = 0; i < 4; i++) {
-    //         minX = this->shape[i].X < minX ? this->shape[i].X : minX;
-    //         minY = this->shape[i].Y < minY ? this->shape[i].Y : minY;
-    //         maxX = this->shape[i].X > maxX ? this->shape[i].X : maxX;
-    //         maxY = this->shape[i].Y > maxY ? this->shape[i].Y : maxY;
-    //     }
-
-    //     top    = minY;
-    //     bottom = maxY;
-    //     left   = minX;
-    //     right  = maxX;
     }
 
 private:
     COORD coord;
     // COORD shape[4];
     COORD **shapes;
-    int top;
-    int bottom;
-    int left;
-    int right;
 };
 
 class CubeGenerator {
