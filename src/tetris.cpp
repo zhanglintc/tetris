@@ -196,7 +196,7 @@ Cube *ctrl_down(Cube *cube) {
             || cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y >= GRID_HEIGHT) {
             setShape(cube);
             // free(cube);
-            COORD ref_coord = {4, 5};
+            COORD ref_coord = {4, 2};
             // cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
         
             cube = g_next_cube;
@@ -314,7 +314,7 @@ Return  : Void
 void displayDemo() {
     initialize();
 
-    COORD ref_coord = {4, 3};
+    COORD ref_coord = {4, 2};
     // Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
     Shape *next = createShape();
     Shape *curr = createShape();
