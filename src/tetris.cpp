@@ -353,8 +353,21 @@ void displayDemo() {
     checkGrid();
     drawGrid();
 
+    int counter = 0;
+
     char gotten;
     while(true) {
+
+        counter++;
+        if(counter >= 50000) {
+            backupGrid();
+            cleanShape(g_cur_cube);
+            g_cur_cube->setCoord(g_cur_cube->getX(), g_cur_cube->getY() + 1);
+            setShape(g_cur_cube);
+            drawGrid();
+            counter = 0;
+        }
+
         if(_kbhit()){
             gotten=_getch();
             backupGrid();
