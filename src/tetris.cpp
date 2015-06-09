@@ -16,6 +16,8 @@ uchar const *g_const_star_w;    // global ※
 char g_Local_Language[10];      // global language info
 int  g_Score = 0;
 CubeGenerator *g_CubeGenerator;
+Cube *g_cur_cube;
+Cube *g_next_cube;
 Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
 Shape SHAPE_I = {2, {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2}};
@@ -191,11 +193,23 @@ Cube *ctrl_down(Cube *cube) {
             // if reach bottom
             || cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y >= GRID_HEIGHT) {
             setShape(cube);
-            free(cube);
-            COORD ref_coord = {4, 5};
+            // free(cube);
+             COORD ref_coord = {4, 5};
             // cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
+        
+            cube = g_next_cube;
+            /*****************************************************
+            There is bug in below code,
+            if I usd s = createShape() then new a Cube with s,
+            the new cube will be null members in it.
+            need investigation.
+
+            // Shape s = createShape();
+            // g_next_cube = new Cube(ref_coord, s.shape, s.types);
+            // g_next_cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
+            *****************************************************/
             int index = random(0, g_CubeGenerator->getLength());
-            cube = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
+            g_next_cube = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
             checkGrid();
             setShape(cube);
             return cube;
@@ -276,22 +290,43 @@ void drawGrid() {
     }
 }
 
+void drawNEXT(Cube *cube) {
+    SetPos (34, 2); cout << "NEXT CUBE:";
+
+    COORD c = {38, 5};
+    for(int i = 0; i < 4; i++) {
+		drawOne(c.X + cube->getShapes()[cube->cur_type][i].X * 2, c.Y + cube->getShapes()[cube->cur_type][i].Y, (char *)g_const_rect_b);
+    }
+}
+
+void cleanNEXT(Cube *cube) {
+    COORD c = {38, 5};
+    for(int i = 0; i < 4; i++) {
+        drawOne(c.X + cube->getShapes()[cube->cur_type][i].X * 2, c.Y + cube->getShapes()[cube->cur_type][i].Y, (char *)ICON_NULL);
+    }
+}
+
+Shape createShape() {
+    int r = random(g_CubeGenerator->getLength());
+    return g_CubeGenerator->getShapeList()[r];
+}
+
 /*******************************************************
 Function: Appearance deme of the game
 Argument: None
 Return  : Void
 *******************************************************/
 void displayDemo() {
-    COORD ref_coord = {4, 3};
-    Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
-
     initialize();
-    drawGame();
 
-    // drawOne( 6, 15, (char *)g_const_rect_b);
-    // drawOne( 8, 15, (char *)g_const_rect_b);
-    // drawOne( 8, 16, (char *)g_const_rect_b);
-    // drawOne(10, 16, (char *)g_const_rect_b);
+    COORD ref_coord = {4, 3};
+    // Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
+    Shape next = createShape();
+    Shape curr = createShape();
+    g_next_cube = new Cube(ref_coord, next.shape, next.types);
+    g_cur_cube =  new Cube(ref_coord, curr.shape, curr.types);
+
+    drawGame();
 
     // set g_Grid, test code
     // for(int i = 0; i < 10; i++) {
@@ -300,11 +335,7 @@ void displayDemo() {
     //     g_Grid[i][18].show = YES;
     // }
 
-    SetPos (34, 2); cout << "NEXT CUBE:";
-    drawOne(36, 4,  (char *)g_const_rect_b);
-    drawOne(38, 4,  (char *)g_const_rect_b);
-    drawOne(36, 5,  (char *)g_const_rect_b);
-    drawOne(38, 5,  (char *)g_const_rect_b);
+    drawNEXT(g_next_cube);
 
     SetPos (34,  8); cout << "HIGH SCORE:";
     SetPos (36, 10); cout << g_Score;
@@ -317,7 +348,7 @@ void displayDemo() {
     //     g_Grid[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
     // }
 
-    setShape(cube);
+    setShape(g_cur_cube);
 
     checkGrid();
     drawGrid();
@@ -329,31 +360,21 @@ void displayDemo() {
             backupGrid();
             switch(gotten) {
                 case CTRL_UP:
-                    // if(cube->getTop() - 1 > FRAME_TOP) {
-                    //     cube->setY(cube->getY() - 1);
-                    // }
-                    ctrl_up(cube);
+                    ctrl_up(g_cur_cube);
                     break;
 
                 case CTRL_DOWN:
-                    // if(cube->getBottom() + 1 < FRAME_BOTTOM) {
-                    //     cube->setY(cube->getY() + 1);
-                    // }
-                    cube = ctrl_down(cube);
+                    g_cur_cube = ctrl_down(g_cur_cube);
+                    cleanNEXT(g_cur_cube);
+                    drawNEXT(g_next_cube);
                     break;
 
                 case CTRL_LEFT:
-                    // if(cube->getLeft() - 2 > FRAME_LEFT) {
-                    //     cube->setX(cube->getX() - 2);
-                    // }
-                    ctrl_left(cube);
+                    ctrl_left(g_cur_cube);
                     break;
 
                 case CTRL_RIGHT:
-                    // if(cube->getRight() + 2 < FRAME_RIGHT) {
-                    //     cube->setX(cube->getX() + 2);
-                    // }
-                    ctrl_right(cube);
+                    ctrl_right(g_cur_cube);
                     break;
             }
             drawGrid();

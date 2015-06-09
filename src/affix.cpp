@@ -150,6 +150,18 @@ int random(int min, int max) {
 }
 
 /*******************************************************
+Function: generate a random number from 0 to max
+Argument: int
+Return  : int
+*******************************************************/
+int random(int max) {
+    int min = 0;
+    if(max < min) swap(&min, &max);
+    if(min == max) return min;
+    else return(rand() % (min - max)) + min;
+}
+
+/*******************************************************
 Function: generate a random position
 Argument: COORD, COORD
 Return  : COORD
