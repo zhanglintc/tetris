@@ -20,6 +20,7 @@ Cube *g_cur_cube;
 Cube *g_next_cube;
 Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
 Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
+Shape SHAPE_O = {1, {(COORD *)SHAPE_O_1}};
 Shape SHAPE_I = {2, {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2}};
 Shape SHAPE_T = {4, {(COORD *)SHAPE_T_1, (COORD *)SHAPE_T_2, (COORD *)SHAPE_T_3, (COORD *)SHAPE_T_4}};
 Shape SHAPE_S = {2, {(COORD *)SHAPE_S_1, (COORD *)SHAPE_S_2}};
@@ -65,6 +66,7 @@ void initialize() {
     }
 
     g_CubeGenerator = new CubeGenerator();
+    g_CubeGenerator->loadShape(SHAPE_O);
     g_CubeGenerator->loadShape(SHAPE_I);
     g_CubeGenerator->loadShape(SHAPE_T);
     g_CubeGenerator->loadShape(SHAPE_S);
