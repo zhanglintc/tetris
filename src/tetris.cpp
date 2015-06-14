@@ -147,8 +147,8 @@ int checkGrid() {
             g_Grid[9][y].show
             ) {
             g_Score += 1;
-            SetPos (34,  8); cout << "HIGH SCORE:";
-            SetPos (36, 10); cout << g_Score;
+            // SetPos (34, 12); cout << "HIGH SCORE:";
+            SetPos (FRAME_RIGHT + 9, 12); cout << g_Score;
             moveGridDown(y);
         }
     }
@@ -290,16 +290,16 @@ void drawGrid() {
 }
 
 void drawNEXT(Cube *cube) {
-    SetPos (34, 2); cout << "NEXT CUBE:";
+    SetPos (FRAME_RIGHT + 6, 2); cout << "NEXT CUBE";
 
-    COORD c = {38, 5};
+    COORD c = {FRAME_RIGHT + 9, 5};
     for(int i = 0; i < 4; i++) {
 		drawOne(c.X + cube->getShapes()[cube->cur_type][i].X * 2, c.Y + cube->getShapes()[cube->cur_type][i].Y, (char *)g_const_rect_b);
     }
 }
 
 void cleanNEXT(Cube *cube) {
-    COORD c = {38, 5};
+    COORD c = {FRAME_RIGHT + 9, 5};
     for(int i = 0; i < 4; i++) {
         drawOne(c.X + cube->getShapes()[cube->cur_type][i].X * 2, c.Y + cube->getShapes()[cube->cur_type][i].Y, (char *)ICON_NULL);
     }
@@ -336,11 +336,11 @@ void displayDemo() {
 
     drawNEXT(g_next_cube);
 
-    SetPos (34,  8); cout << "HIGH SCORE:";
-    SetPos (36, 10); cout << g_Score;
+    SetPos (FRAME_RIGHT + 5, 10); cout << "HIGH SCORE";
+    SetPos (FRAME_RIGHT + 9, 12); cout << g_Score;
 
-    SetPos (34, 13); cout << "  STATUS:";
-    SetPos (34, 15); cout << " Pausing";
+    SetPos (FRAME_RIGHT + 8, 17); cout << "STATUS";
+    SetPos (FRAME_RIGHT + 7, 19); cout << "Playing";
 
     // // set g_Grid, test code
     // for(int i = 0; i < 4; i++) {

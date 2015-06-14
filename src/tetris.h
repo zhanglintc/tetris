@@ -30,7 +30,7 @@ using namespace std;
 #define ABSOLUTE_TOP        0
 #define ABSOLUTE_BOTTOM     22
 #define ABSOLUTE_LEFT       0
-#define ABSOLUTE_RIGHT      60
+#define ABSOLUTE_RIGHT      40
 
 #define FRAME_TOP           (ABSOLUTE_TOP)
 #define FRAME_BOTTOM        (ABSOLUTE_BOTTOM)
