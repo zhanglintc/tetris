@@ -351,6 +351,7 @@ void playing();
 void notSupported();
 int checkGrid();
 void displayDemo();
+void gameOver();
 
 #endif //_TETRIS_H_
 

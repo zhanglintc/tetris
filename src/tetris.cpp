@@ -44,7 +44,12 @@ void initialize() {
     HideCursor();       // hide cursor
     getLocalLanguage(); // get local language information
 
-    //initialize icons
+    // initialize global varibals
+    memset(g_Grid,     0, sizeof(g_Grid));
+    memset(g_Grid_Bak, 0, sizeof(g_Grid_Bak));
+    g_Score = 0;
+
+    // initialize icons
     if(!strcmp(g_Local_Language, "CHS") && !strcmp(g_Local_Language, "JPN")) {
         notSupported(); // if not supported, stop in NotSupport() function
     }
@@ -227,6 +232,9 @@ Cube *ctrl_down(Cube *cube) {
             // cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
         
             cube = g_next_cube;
+            if(isValidShapePos(cube) == false) {
+                gameOver();
+            }
             Shape *s = createShape();
             g_next_cube = new Cube(ref_coord, s->shape, s->types);
             // g_next_cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
@@ -310,6 +318,18 @@ Shape *createShape() {
     return &g_CubeGenerator->getShapeList()[r];
 }
 
+void gameOver() {
+    system("cls");
+    SetPos(17, 10); cout << "Game over";
+    SetPos(13, 11); cout << "Press space to replay...";
+    while(_kbhit() || !_kbhit()) {
+        if(CTRL_SPACE == _getch()) {
+            break;
+        }
+    }
+    displayDemo();
+}
+
 /*******************************************************
 Function: Appearance deme of the game
 Argument: None
@@ -369,6 +389,9 @@ void displayDemo() {
 
                 // get next cube && draw it
                 g_cur_cube = g_next_cube;
+                if(isValidShapePos(g_cur_cube) == false) {
+                    gameOver();
+                }
                 Shape *s = createShape();
                 g_next_cube = new Cube(ref_coord, s->shape, s->types);
                 cleanNEXT(g_cur_cube);
