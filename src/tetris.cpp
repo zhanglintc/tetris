@@ -34,15 +34,17 @@ Argument: none
 Return  : void
 *******************************************************/
 void initialize() {
+    // console settings
     char con_size[30] = {};
     sprintf(con_size, "mode con cols=%d lines=%d", ABSOLUTE_RIGHT + 1, ABSOLUTE_BOTTOM + 1);
     system (con_size);
     system ("title Tetris Game by Lane at ZDS");
     system ("color 3e"); // set color
     system ("cls");      // clean screen
-
     HideCursor();       // hide cursor
-    getLocalLanguage(); // get local language information
+
+    // get random seed
+    srand((unsigned)time(NULL));        // Random number seed initial
 
     // initialize global varibals
     memset(g_GRID,     0, sizeof(g_GRID));
@@ -50,6 +52,8 @@ void initialize() {
     g_SCORE = 0;
 
     // initialize icons
+    getLocalLanguage(); // get local language information
+
     if(!strcmp(g_Local_Language, "CHS") && !strcmp(g_Local_Language, "JPN")) {
         notSupported(); // if not supported, stop in NotSupport() function
     }
@@ -70,6 +74,7 @@ void initialize() {
         g_const_star_w = STAR_JPN_W;
     }
 
+    // load shapes
     g_CubeGenerator = new CubeGenerator();
     g_CubeGenerator->loadShape(SHAPE_O);
     g_CubeGenerator->loadShape(SHAPE_I);
@@ -79,7 +84,16 @@ void initialize() {
     g_CubeGenerator->loadShape(SHAPE_L);
     g_CubeGenerator->loadShape(SHAPE_J);
 
-    srand((unsigned)time(NULL));        // Random number seed initial
+    // initialize global cubes
+    COORD ref_coord = {4, 2};
+    Shape *next = createShape();
+    Shape *curr = createShape();
+    g_NEXT_CUBE = new Cube(ref_coord, next->shape, next->types);
+    g_CUR_CUBE =  new Cube(ref_coord, curr->shape, curr->types);
+    setShape(g_CUR_CUBE);
+
+    // draw initial game screen
+    drawGame();
 }
 
 /*******************************************************
@@ -88,19 +102,21 @@ Argument: none
 Return  : void
 *******************************************************/
 void drawGame() {
-    system("cls");
+    // system("cls");
 
     drawFrame(FRAME_LEFT, FRAME_TOP, FRAME_RIGHT, FRAME_BOTTOM, (char *)g_const_rect_w, (char *)g_const_rect_w);  // outside frame
     drawFrame( DASH_LEFT,  DASH_TOP,  DASH_RIGHT,  DASH_BOTTOM, (char *)g_const_star_w, (char *)g_const_star_w);  // dashboard frame
-}
 
-/*******************************************************
-Function: play game
-Argument: none
-Return  : void
-*******************************************************/
-void playing() {
-    ;
+    SetPos (FRAME_RIGHT + 6, 2); cout << "NEXT CUBE";
+    drawNEXT(g_NEXT_CUBE);
+
+    SetPos (FRAME_RIGHT + 5, 10); cout << "HIGH SCORE";
+    SetPos (FRAME_RIGHT + 9, 12); cout << g_SCORE;
+
+    SetPos (FRAME_RIGHT + 8, 17); cout << "STATUS";
+    SetPos (FRAME_RIGHT + 7, 19); cout << "Playing";
+
+    drawGrid();
 }
 
 bool isInCube(COORD pos, Cube *cube) {
@@ -291,8 +307,6 @@ void drawGrid() {
 }
 
 void drawNEXT(Cube *cube) {
-    SetPos (FRAME_RIGHT + 6, 2); cout << "NEXT CUBE";
-
     COORD c = {FRAME_RIGHT + 9, 5};
     for(int i = 0; i < 4; i++) {
 		drawOne(c.X + cube->getShapes()[cube->cur_type][i].X * 2, c.Y + cube->getShapes()[cube->cur_type][i].Y, (char *)g_const_rect_b);
@@ -320,88 +334,54 @@ void gameOver() {
             break;
         }
     }
-    displayDemo();
+    initialize();
+    playGame();
+}
+
+void autoMoveDown() {
+    backupGrid();
+    cleanShape(g_CUR_CUBE);
+    g_CUR_CUBE->moveDown();
+    if(isValidShapePos(g_CUR_CUBE) == false) {
+        // move back && setShape
+        g_CUR_CUBE->moveUp();
+        setShape(g_CUR_CUBE);
+
+        // get next cube && draw it
+        g_CUR_CUBE = g_NEXT_CUBE;
+        if(isValidShapePos(g_CUR_CUBE) == false) {
+            gameOver();
+        }
+        Shape *s = createShape();
+        COORD ref_coord = {4, 2};
+        g_NEXT_CUBE = new Cube(ref_coord, s->shape, s->types);
+        cleanNEXT(g_CUR_CUBE);
+        drawNEXT(g_NEXT_CUBE);
+    }
+    else {
+        ; // do nothing
+    }
+    setShape(g_CUR_CUBE);
+    drawGrid();
 }
 
 /*******************************************************
-Function: Appearance deme of the game
-Argument: None
-Return  : Void
+Function: play game
+Argument: none
+Return  : void
 *******************************************************/
-void displayDemo() {
-    initialize();
-
-    COORD ref_coord = {4, 2};
-    // Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
-    Shape *next = createShape();
-    Shape *curr = createShape();
-    g_NEXT_CUBE = new Cube(ref_coord, next->shape, next->types);
-    g_CUR_CUBE =  new Cube(ref_coord, curr->shape, curr->types);
-
-    drawGame();
-
-    // set g_GRID, test code
-    // for(int i = 0; i < 10; i++) {
-    //     g_GRID[i][20].show = YES;
-    //     g_GRID[i][19].show = YES;
-    //     g_GRID[i][18].show = YES;
-    // }
-
-    drawNEXT(g_NEXT_CUBE);
-
-    SetPos (FRAME_RIGHT + 5, 10); cout << "HIGH SCORE";
-    SetPos (FRAME_RIGHT + 9, 12); cout << g_SCORE;
-
-    SetPos (FRAME_RIGHT + 8, 17); cout << "STATUS";
-    SetPos (FRAME_RIGHT + 7, 19); cout << "Playing";
-
-    // // set g_GRID, test code
-    // for(int i = 0; i < 4; i++) {
-    //     g_GRID[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
-    // }
-
-    setShape(g_CUR_CUBE);
-
-    checkGrid();
-    drawGrid();
-
+void playGame() {
     int counter = 0;
-
-    char gotten;
     while(true) {
-
         counter++;
         if(counter >= 30000) {
-            backupGrid();
-            cleanShape(g_CUR_CUBE);
-            g_CUR_CUBE->moveDown();
-            if(isValidShapePos(g_CUR_CUBE) == false) {
-                // move back && setShape
-                g_CUR_CUBE->moveUp();
-                setShape(g_CUR_CUBE);
-
-                // get next cube && draw it
-                g_CUR_CUBE = g_NEXT_CUBE;
-                if(isValidShapePos(g_CUR_CUBE) == false) {
-                    gameOver();
-                }
-                Shape *s = createShape();
-                g_NEXT_CUBE = new Cube(ref_coord, s->shape, s->types);
-                cleanNEXT(g_CUR_CUBE);
-                drawNEXT(g_NEXT_CUBE);
-            }
-            else {
-                ; // do nothing
-            }
-            setShape(g_CUR_CUBE);
-            drawGrid();
+            autoMoveDown();
             counter = 0;
         }
 
         if(_kbhit()){
-            gotten=_getch();
             backupGrid();
-            switch(gotten) {
+            switch(_getch()) {
                 case CTRL_UP:
                     ctrl_up(g_CUR_CUBE);
                     break;
@@ -420,6 +400,8 @@ void displayDemo() {
                     ctrl_right(g_CUR_CUBE);
                     break;
             }
+
+            // after keyboard event, drawGrid()
             drawGrid();
         }
     }
@@ -431,7 +413,8 @@ Argument: none
 Return  : Int
 *******************************************************/
 int main() {
-    displayDemo();
+    initialize();
+    playGame();
     return 0;
 }
 

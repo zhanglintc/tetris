@@ -347,11 +347,15 @@ Shape *createShape();
 void swap(int *a, int *b);
 void getLocalLanguage();
 void initialize();
-void playing();
+void playGame();
 void notSupported();
 int checkGrid();
-void displayDemo();
 void gameOver();
+void drawGame();
+void drawNEXT(Cube *cube);
+void setShape(Cube *cube);
+void drawGrid();
+void autoMoveDown();
 
 #endif //_TETRIS_H_
 
