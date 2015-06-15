@@ -1,0 +1,11 @@
+To-dos:
+
+1. Merge backupGrid() and drawGrid(). Try to delete backupGrid() and g_GRID_BAK,
+  then add attribution "modified" to g_GRID[][]. In drawGrid(), only redraw
+  the position which "modified" is true.
+
+2. Make createShape() create Shape with random Shape->types.
+
+3. Optimize NEXT CUBE display.
+
+
