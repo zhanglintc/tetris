@@ -14,12 +14,12 @@ uchar const *g_const_star_w;    // global ※
 
 // global variable declares
 char g_Local_Language[10];      // global language info
-int  g_Score = 0;
+int  g_SCORE = 0;
 CubeGenerator *g_CubeGenerator;
-Cube *g_cur_cube;
-Cube *g_next_cube;
-Grid g_Grid[GRID_WIDTH][GRID_HEIGHT] = {};
-Grid g_Grid_Bak[GRID_WIDTH][GRID_HEIGHT] = {};
+Cube *g_CUR_CUBE;
+Cube *g_NEXT_CUBE;
+Grid g_GRID[GRID_WIDTH][GRID_HEIGHT] = {};
+Grid g_GRID_BAK[GRID_WIDTH][GRID_HEIGHT] = {};
 Shape SHAPE_O = {1, {(COORD *)SHAPE_O_1}};
 Shape SHAPE_I = {2, {(COORD *)SHAPE_I_1, (COORD *)SHAPE_I_2}};
 Shape SHAPE_T = {4, {(COORD *)SHAPE_T_1, (COORD *)SHAPE_T_2, (COORD *)SHAPE_T_3, (COORD *)SHAPE_T_4}};
@@ -45,9 +45,9 @@ void initialize() {
     getLocalLanguage(); // get local language information
 
     // initialize global varibals
-    memset(g_Grid,     0, sizeof(g_Grid));
-    memset(g_Grid_Bak, 0, sizeof(g_Grid_Bak));
-    g_Score = 0;
+    memset(g_GRID,     0, sizeof(g_GRID));
+    memset(g_GRID_BAK, 0, sizeof(g_GRID_BAK));
+    g_SCORE = 0;
 
     // initialize icons
     if(!strcmp(g_Local_Language, "CHS") && !strcmp(g_Local_Language, "JPN")) {
@@ -115,13 +115,13 @@ bool isInCube(COORD pos, Cube *cube) {
 
 void cleanShape(Cube *cube) {
     for(int i = 0; i < 4; i++) {
-        g_Grid[cube->getX() + cube->getShapes()[cube->cur_type][i].X][cube->getY() + cube->getShapes()[cube->cur_type][i].Y].show = 0;
+        g_GRID[cube->getX() + cube->getShapes()[cube->cur_type][i].X][cube->getY() + cube->getShapes()[cube->cur_type][i].Y].show = 0;
     }
 }
 
 void setShape(Cube *cube) {
     for(int i = 0; i < 4; i++) {
-        g_Grid[cube->getX() + cube->getShapes()[cube->cur_type][i].X][cube->getY() + cube->getShapes()[cube->cur_type][i].Y].show = 1;
+        g_GRID[cube->getX() + cube->getShapes()[cube->cur_type][i].X][cube->getY() + cube->getShapes()[cube->cur_type][i].Y].show = 1;
     }
 }
 
@@ -129,10 +129,10 @@ void moveGridDown(int tergetY) {
     for(int y = tergetY; y >= 0; y--) {
         for(int x = 0; x < GRID_WIDTH; x++) {
             if(y == 0) {
-                g_Grid[x][y].show = 0;
+                g_GRID[x][y].show = 0;
             }
             else {
-                g_Grid[x][y] = g_Grid[x][y - 1];
+                g_GRID[x][y] = g_GRID[x][y - 1];
             }
         }
     }
@@ -140,25 +140,18 @@ void moveGridDown(int tergetY) {
 
 int checkGrid() {
     for(int y = 0; y < GRID_HEIGHT; y++) {
-        while( g_Grid[0][y].show &&
-            g_Grid[1][y].show &&
-            g_Grid[2][y].show &&
-            g_Grid[3][y].show &&
-            g_Grid[4][y].show &&
-            g_Grid[5][y].show &&
-            g_Grid[6][y].show &&
-            g_Grid[7][y].show &&
-            g_Grid[8][y].show &&
-            g_Grid[9][y].show
-            ) {
-            g_Score += 1;
-            // SetPos (34, 12); cout << "HIGH SCORE:";
-            SetPos (FRAME_RIGHT + 9, 12); cout << g_Score;
+        while(  g_GRID[0][y].show && g_GRID[1][y].show &&
+                g_GRID[2][y].show && g_GRID[3][y].show && 
+                g_GRID[4][y].show && g_GRID[5][y].show &&
+                g_GRID[6][y].show && g_GRID[7][y].show &&
+                g_GRID[8][y].show && g_GRID[9][y].show) {
+            g_SCORE += 10;
+            SetPos (FRAME_RIGHT + 9, 12); cout << g_SCORE;
             moveGridDown(y);
         }
     }
 
-    return g_Score;
+    return g_SCORE;
 }
 
 bool isValidShapePos(Cube *cube) {
@@ -169,7 +162,7 @@ bool isValidShapePos(Cube *cube) {
         c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y;
 
         // hit dormant cubes?
-        if(g_Grid[c.X][c.Y].show == 1) {
+        if(g_GRID[c.X][c.Y].show == 1) {
             return false;
         }
 
@@ -203,7 +196,7 @@ void ctrl_up(Cube *cube) {
 Cube *ctrl_down(Cube *cube) {
     // cleanShape(cube);
     // if(cube->getBottom() + 1 < GRID_HEIGHT) {
-    //     if(g_Grid[cube->getX()][cube->getBottom() + 1].show == YES) {
+    //     if(g_GRID[cube->getX()][cube->getBottom() + 1].show == YES) {
     //         setShape(cube);
     //         free(cube);
     //         COORD ref_coord = {4, 0};
@@ -223,7 +216,7 @@ Cube *ctrl_down(Cube *cube) {
         c.Y = cube->getCoord().Y + cube->getShapes()[cube->cur_type][i].Y + 1;
         if(
             // if reach blocks
-            isInCube(c, cube) == false && g_Grid[cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y].show == 1
+            isInCube(c, cube) == false && g_GRID[cube->getCoord().X + cube->getShapes()[cube->cur_type][i].X][cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y].show == 1
             // if reach bottom
             || cube->getCoord().Y + 1 + cube->getShapes()[cube->cur_type][i].Y >= GRID_HEIGHT) {
             setShape(cube);
@@ -231,15 +224,15 @@ Cube *ctrl_down(Cube *cube) {
             COORD ref_coord = {4, 2};
             // cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
         
-            cube = g_next_cube;
+            cube = g_NEXT_CUBE;
             if(isValidShapePos(cube) == false) {
                 gameOver();
             }
             Shape *s = createShape();
-            g_next_cube = new Cube(ref_coord, s->shape, s->types);
-            // g_next_cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
+            g_NEXT_CUBE = new Cube(ref_coord, s->shape, s->types);
+            // g_NEXT_CUBE = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
             // int index = random(0, g_CubeGenerator->getLength());
-            // g_next_cube = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
+            // g_NEXT_CUBE = new Cube(ref_coord, g_CubeGenerator->getShapeList()[index].shape, g_CubeGenerator->getShapeList()[index].types);
             checkGrid();
             setShape(cube);
             return cube;
@@ -281,16 +274,16 @@ void ctrl_right(Cube *cube) {
 }
 
 void backupGrid() {
-    memcpy(g_Grid_Bak, g_Grid, sizeof(g_Grid));
+    memcpy(g_GRID_BAK, g_GRID, sizeof(g_GRID));
 }
 
 void drawGrid() {
     for(int x = 0; x < GRID_WIDTH; x++) {
         for(int y = 0; y < GRID_HEIGHT; y++) {
-            if(g_Grid[x][y].show == YES && g_Grid_Bak[x][y].show == NO) {
+            if(g_GRID[x][y].show == YES && g_GRID_BAK[x][y].show == NO) {
                 drawOne(x * 2 + 2, y + 1, (char *)g_const_rect_b);
             }
-            else if(g_Grid[x][y].show == NO && g_Grid_Bak[x][y].show == YES){
+            else if(g_GRID[x][y].show == NO && g_GRID_BAK[x][y].show == YES){
                 drawOne(x * 2 + 2, y + 1, (char *)ICON_NULL);
             }
         }
@@ -342,32 +335,32 @@ void displayDemo() {
     // Cube *cube = new Cube(ref_coord, SHAPE_T.shape, SHAPE_T.types);
     Shape *next = createShape();
     Shape *curr = createShape();
-    g_next_cube = new Cube(ref_coord, next->shape, next->types);
-    g_cur_cube =  new Cube(ref_coord, curr->shape, curr->types);
+    g_NEXT_CUBE = new Cube(ref_coord, next->shape, next->types);
+    g_CUR_CUBE =  new Cube(ref_coord, curr->shape, curr->types);
 
     drawGame();
 
-    // set g_Grid, test code
+    // set g_GRID, test code
     // for(int i = 0; i < 10; i++) {
-    //     g_Grid[i][20].show = YES;
-    //     g_Grid[i][19].show = YES;
-    //     g_Grid[i][18].show = YES;
+    //     g_GRID[i][20].show = YES;
+    //     g_GRID[i][19].show = YES;
+    //     g_GRID[i][18].show = YES;
     // }
 
-    drawNEXT(g_next_cube);
+    drawNEXT(g_NEXT_CUBE);
 
     SetPos (FRAME_RIGHT + 5, 10); cout << "HIGH SCORE";
-    SetPos (FRAME_RIGHT + 9, 12); cout << g_Score;
+    SetPos (FRAME_RIGHT + 9, 12); cout << g_SCORE;
 
     SetPos (FRAME_RIGHT + 8, 17); cout << "STATUS";
     SetPos (FRAME_RIGHT + 7, 19); cout << "Playing";
 
-    // // set g_Grid, test code
+    // // set g_GRID, test code
     // for(int i = 0; i < 4; i++) {
-    //     g_Grid[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
+    //     g_GRID[cube->getShapes()[0][i].X + 4][cube->getShapes()[0][i].Y + 3].show = YES;
     // }
 
-    setShape(g_cur_cube);
+    setShape(g_CUR_CUBE);
 
     checkGrid();
     drawGrid();
@@ -380,27 +373,27 @@ void displayDemo() {
         counter++;
         if(counter >= 30000) {
             backupGrid();
-            cleanShape(g_cur_cube);
-            g_cur_cube->moveDown();
-            if(isValidShapePos(g_cur_cube) == false) {
+            cleanShape(g_CUR_CUBE);
+            g_CUR_CUBE->moveDown();
+            if(isValidShapePos(g_CUR_CUBE) == false) {
                 // move back && setShape
-                g_cur_cube->moveUp();
-                setShape(g_cur_cube);
+                g_CUR_CUBE->moveUp();
+                setShape(g_CUR_CUBE);
 
                 // get next cube && draw it
-                g_cur_cube = g_next_cube;
-                if(isValidShapePos(g_cur_cube) == false) {
+                g_CUR_CUBE = g_NEXT_CUBE;
+                if(isValidShapePos(g_CUR_CUBE) == false) {
                     gameOver();
                 }
                 Shape *s = createShape();
-                g_next_cube = new Cube(ref_coord, s->shape, s->types);
-                cleanNEXT(g_cur_cube);
-                drawNEXT(g_next_cube);
+                g_NEXT_CUBE = new Cube(ref_coord, s->shape, s->types);
+                cleanNEXT(g_CUR_CUBE);
+                drawNEXT(g_NEXT_CUBE);
             }
             else {
                 ; // do nothing
             }
-            setShape(g_cur_cube);
+            setShape(g_CUR_CUBE);
             drawGrid();
             counter = 0;
         }
@@ -410,21 +403,21 @@ void displayDemo() {
             backupGrid();
             switch(gotten) {
                 case CTRL_UP:
-                    ctrl_up(g_cur_cube);
+                    ctrl_up(g_CUR_CUBE);
                     break;
 
                 case CTRL_DOWN:
-                    g_cur_cube = ctrl_down(g_cur_cube);
-                    cleanNEXT(g_cur_cube);
-                    drawNEXT(g_next_cube);
+                    g_CUR_CUBE = ctrl_down(g_CUR_CUBE);
+                    cleanNEXT(g_CUR_CUBE);
+                    drawNEXT(g_NEXT_CUBE);
                     break;
 
                 case CTRL_LEFT:
-                    ctrl_left(g_cur_cube);
+                    ctrl_left(g_CUR_CUBE);
                     break;
 
                 case CTRL_RIGHT:
-                    ctrl_right(g_cur_cube);
+                    ctrl_right(g_CUR_CUBE);
                     break;
             }
             drawGrid();
