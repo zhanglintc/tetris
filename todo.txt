@@ -8,4 +8,6 @@ To-dos:
 
 3. Optimize NEXT CUBE display.
 
+4. Bonus if eliminate more than one line.
+
 
