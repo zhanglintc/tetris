@@ -14,7 +14,7 @@ uchar const *g_const_star_w;    // global ※
 
 // global variable declares
 char g_Local_Language[10];      // global language info
-int  g_SCORE = 0;
+int  g_SCORE = 0;               // global score
 CubeGenerator *g_CubeGenerator;
 Cube *g_CUR_CUBE;
 Cube *g_NEXT_CUBE;
@@ -141,6 +141,17 @@ void setShape(Cube *cube) {
     }
 }
 
+/*******************************************************
+Function: Auto move cubes down.
+|
+|
+|--------- => targetY. Move cubes above targetY down.
+|
+|
+ ---------
+Argument: int
+Return  : none
+*******************************************************/
 void moveGridDown(int tergetY) {
     for(int y = tergetY; y >= 0; y--) {
         for(int x = 0; x < GRID_WIDTH; x++) {
@@ -154,18 +165,46 @@ void moveGridDown(int tergetY) {
     }
 }
 
+/*******************************************************
+Function: Check grid and count points that user can get.
+Argument: none
+Return  : int
+*******************************************************/
 int checkGrid() {
+    int eliminatedLine = 0;
+
     for(int y = 0; y < GRID_HEIGHT; y++) {
-        while(  g_GRID[0][y].show && g_GRID[1][y].show &&
-                g_GRID[2][y].show && g_GRID[3][y].show && 
-                g_GRID[4][y].show && g_GRID[5][y].show &&
-                g_GRID[6][y].show && g_GRID[7][y].show &&
-                g_GRID[8][y].show && g_GRID[9][y].show) {
-            g_SCORE += 10;
-            SetPos (FRAME_RIGHT + 9, 12); cout << g_SCORE;
+        while( g_GRID[0][y].show && g_GRID[1][y].show && g_GRID[2][y].show && g_GRID[3][y].show && g_GRID[4][y].show &&
+               g_GRID[5][y].show && g_GRID[6][y].show && g_GRID[7][y].show && g_GRID[8][y].show && g_GRID[9][y].show) {
+            eliminatedLine += 1;
             moveGridDown(y);
         }
     }
+
+    // bonus if eliminate more than one line
+    switch(eliminatedLine) {
+        case 1:
+            g_SCORE += 10;
+            break;
+
+        case 2:
+            g_SCORE += 40;
+            break;
+
+        case 3:
+            g_SCORE += 60;
+            break;
+
+        case 4:
+            g_SCORE += 100;
+            break;
+
+        default:
+            g_SCORE += 0;
+            break;
+    }
+
+    SetPos (FRAME_RIGHT + 9, 12); cout << g_SCORE;
 
     return g_SCORE;
 }
@@ -366,7 +405,7 @@ void autoMoveDown() {
 }
 
 /*******************************************************
-Function: play game
+Function: Play game
 Argument: none
 Return  : void
 *******************************************************/
@@ -408,9 +447,9 @@ void playGame() {
 }
 
 /*******************************************************
-Function: main entrance
+Function: Main entrance
 Argument: none
-Return  : Int
+Return  : int
 *******************************************************/
 int main() {
     initialize();
