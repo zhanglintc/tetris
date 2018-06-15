@@ -396,6 +396,7 @@ void autoMoveDown() {
         g_NEXT_CUBE = new Cube(ref_coord, s->shape, s->types);
         cleanNEXT(g_CUR_CUBE);
         drawNEXT(g_NEXT_CUBE);
+        checkGrid();
     }
     else {
         ; // do nothing
