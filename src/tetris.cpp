@@ -400,6 +400,8 @@ void autoMoveDown() {
     else {
         ; // do nothing
     }
+    checkGrid();
+    checkGrid();
     setShape(g_CUR_CUBE);
     drawGrid();
 }
